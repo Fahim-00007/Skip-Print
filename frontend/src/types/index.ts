@@ -56,6 +56,15 @@ export interface Signature {
   url: string;
 }
 
+export interface BlockItem {
+  id: string; // 'table' | 'bill_meta' | 'client_info' | 'bank_notes'
+  name: string;
+  dx: number;
+  dy: number;
+  scale: number;
+  visible: boolean;
+}
+
 export interface LayoutSettings {
   layout_mode: 'fit_pad' | 'preserve';
   paper_size: 'A4' | 'Letter';
@@ -68,6 +77,7 @@ export interface LayoutSettings {
   offset_x: number;
   offset_y: number;
   repeat_letterhead: boolean;
+  blocks?: BlockItem[];
 }
 
 export interface SignaturePlacement {

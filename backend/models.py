@@ -17,6 +17,14 @@ class TextAnnotation(BaseModel):
     page: str = "all" # 'all', '1', '2', 'last'
     rotation: int = 0
 
+class BlockItem(BaseModel):
+    id: str # 'table', 'bill_meta', 'client_info', 'bank_notes'
+    name: str # 'Line Items Table', 'Bill # & Date', 'Client Info', 'Bank Details'
+    dx: float = 0.0
+    dy: float = 0.0
+    scale: float = 1.0
+    visible: bool = True
+
 class LayoutSettings(BaseModel):
     layout_mode: str = "fit_pad" # 'fit_pad' or 'preserve'
     paper_size: str = "A4"       # 'A4' or 'Letter'
@@ -29,6 +37,7 @@ class LayoutSettings(BaseModel):
     offset_x: float = 0.0
     offset_y: float = 0.0
     repeat_letterhead: bool = True
+    blocks: Optional[List[BlockItem]] = Field(default_factory=list)
 
 class SignatureSettings(BaseModel):
     signature_id: Optional[str] = None

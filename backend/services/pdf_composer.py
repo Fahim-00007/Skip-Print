@@ -1,7 +1,7 @@
 """
 PDF Composition Service.
 Overlays Excel bill vector content onto company letterhead templates, adds signatures,
-and renders custom text annotations.
+renders custom text annotations, and supports independent movable/scalable content blocks.
 Maintains 100% selectable text, sharp vector graphics, and transparent PNG signatures.
 """
 import os
@@ -43,11 +43,12 @@ def compose_document(
     signature_path: str = None,
     signature_page: str = "last", # "all", "last", or 1-based index str
     signature_coords: dict = None, # { x, y, width, height, opacity, rotation }
-    annotations: list = None # List of TextAnnotation dicts
+    annotations: list = None, # List of TextAnnotation dicts
+    blocks: list = None # List of BlockItem
 ) -> dict:
     """
     Composes the multi-page vector PDF with letterhead background, scaled bill content,
-    signatures, and live text annotations.
+    signatures, custom text annotations, and movable/scalable block groups.
     """
     if not os.path.exists(bill_pdf_path):
         raise FileNotFoundError(f"Bill PDF not found: {bill_pdf_path}")
@@ -67,6 +68,17 @@ def compose_document(
 
     out_doc = fitz.open()
 
+    # Determine if blocks have custom non-zero offsets
+    has_block_transforms = False
+    block_dict = {}
+    if blocks:
+        for b in blocks:
+            b_dict = b if isinstance(b, dict) else b.model_dump()
+            b_id = b_dict.get("id")
+            block_dict[b_id] = b_dict
+            if abs(b_dict.get("dx", 0)) > 0.1 or abs(b_dict.get("dy", 0)) > 0.1 or abs(b_dict.get("scale", 1.0) - 1.0) > 0.01:
+                has_block_transforms = True
+
     for pno in range(total_bill_pages):
         page_num_1based = pno + 1
         new_page = out_doc.new_page(width=page_width, height=page_height)
@@ -80,28 +92,84 @@ def compose_document(
             elif lh_is_image:
                 new_page.insert_image(new_page.rect, filename=template_path)
 
-        # 2. Render Bill Content Vectorially
-        if layout_mode == "fit_pad":
-            base_rect = fitz.Rect(
-                margin_left + offset_x,
-                margin_top + offset_y,
-                page_width - margin_right + offset_x,
-                page_height - margin_bottom + offset_y
-            )
+        # 2. Render Bill Content
+        src_page = bill_doc[pno]
+        src_pw = src_page.rect.width
+        src_ph = src_page.rect.height
 
-            if scale_factor != 1.0:
-                cx = (base_rect.x0 + base_rect.x1) / 2
-                cy = (base_rect.y0 + base_rect.y1) / 2
-                half_w = (base_rect.width * scale_factor) / 2
-                half_h = (base_rect.height * scale_factor) / 2
-                target_rect = fitz.Rect(cx - half_w, cy - half_h, cx + half_w, cy + half_h)
-            else:
-                target_rect = base_rect
+        if has_block_transforms and pno == 0:
+            # Independent grouped blocks rendering
+            # Partition definitions (relative 0..1 of src page)
+            partitions = [
+                {
+                    "id": "bill_meta",
+                    "clip": fitz.Rect(0, 0, src_pw, src_ph * 0.22),
+                    "base_y": margin_top,
+                    "base_h": 95.0
+                },
+                {
+                    "id": "client_info",
+                    "clip": fitz.Rect(0, src_ph * 0.22, src_pw, src_ph * 0.35),
+                    "base_y": margin_top + 100.0,
+                    "base_h": 65.0
+                },
+                {
+                    "id": "table",
+                    "clip": fitz.Rect(0, src_ph * 0.35, src_pw, src_ph * 0.78),
+                    "base_y": margin_top + 175.0,
+                    "base_h": 320.0
+                },
+                {
+                    "id": "bank_notes",
+                    "clip": fitz.Rect(0, src_ph * 0.78, src_pw, src_ph),
+                    "base_y": margin_top + 505.0,
+                    "base_h": 140.0
+                }
+            ]
 
-            new_page.show_pdf_page(target_rect, bill_doc, pno=pno, keep_proportion=True)
+            base_w = page_width - margin_left - margin_right
+
+            for part in partitions:
+                p_id = part["id"]
+                cfg = block_dict.get(p_id, {})
+                if not cfg.get("visible", True):
+                    continue
+
+                bdx = float(cfg.get("dx", 0.0)) + offset_x
+                bdy = float(cfg.get("dy", 0.0)) + offset_y
+                bscale = float(cfg.get("scale", 1.0)) * scale_factor
+
+                target_w = base_w * bscale
+                target_h = part["base_h"] * bscale
+                target_x = margin_left + bdx
+                target_y = part["base_y"] + bdy
+
+                t_rect = fitz.Rect(target_x, target_y, target_x + target_w, target_y + target_h)
+                new_page.show_pdf_page(t_rect, bill_doc, pno=pno, clip=part["clip"], keep_proportion=True)
+
         else:
-            content_rect = fitz.Rect(offset_x, offset_y, page_width + offset_x, page_height + offset_y)
-            new_page.show_pdf_page(content_rect, bill_doc, pno=pno, keep_proportion=True)
+            # Unified whole bill layout
+            if layout_mode == "fit_pad":
+                base_rect = fitz.Rect(
+                    margin_left + offset_x,
+                    margin_top + offset_y,
+                    page_width - margin_right + offset_x,
+                    page_height - margin_bottom + offset_y
+                )
+
+                if scale_factor != 1.0:
+                    cx = (base_rect.x0 + base_rect.x1) / 2
+                    cy = (base_rect.y0 + base_rect.y1) / 2
+                    half_w = (base_rect.width * scale_factor) / 2
+                    half_h = (base_rect.height * scale_factor) / 2
+                    target_rect = fitz.Rect(cx - half_w, cy - half_h, cx + half_w, cy + half_h)
+                else:
+                    target_rect = base_rect
+
+                new_page.show_pdf_page(target_rect, bill_doc, pno=pno, keep_proportion=True)
+            else:
+                content_rect = fitz.Rect(offset_x, offset_y, page_width + offset_x, page_height + offset_y)
+                new_page.show_pdf_page(content_rect, bill_doc, pno=pno, keep_proportion=True)
 
         # 3. Add Signature
         if signature_path and os.path.exists(signature_path) and signature_coords:
@@ -136,12 +204,12 @@ def compose_document(
                     rotate=rot
                 )
 
-        # 4. Add Text Annotations (Custom editable text blocks)
+        # 4. Add Text Annotations
         if annotations:
             for ann in annotations:
                 ann_dict = ann if isinstance(ann, dict) else ann.model_dump()
                 ann_page = str(ann_dict.get("page", "all"))
-                
+
                 is_ann_page = False
                 if ann_page == "all":
                     is_ann_page = True
@@ -186,9 +254,10 @@ def compose_document(
         "file_size": os.path.getsize(output_pdf_path)
     }
 
-def render_page_preview_data_url(pdf_path: str, page_number: int = 1, dpi: int = 140) -> str:
+def render_page_preview_data_url(pdf_path: str, page_number: int = 1, dpi: int = 115) -> str:
     """
     Renders a given page of a PDF directly to a base64 PNG data URL for live UI display.
+    Optimized for fast rendering.
     """
     if not os.path.exists(pdf_path):
         raise FileNotFoundError(f"PDF not found: {pdf_path}")

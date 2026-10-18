@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Download, ExternalLink, CheckCircle, ArrowLeft, RefreshCw, Sparkles, ShieldCheck } from 'lucide-react';
 import { LivePreview } from '../preview/LivePreview';
-import { TextAnnotation, SheetPreviewData } from '../../types';
+import { TextAnnotation, SheetPreviewData, BlockItem } from '../../types';
 
 interface Step5ExportProps {
   defaultFilename: string;
@@ -18,6 +18,10 @@ interface Step5ExportProps {
   onAddAnnotation?: () => void;
   onUpdateAnnotation?: (id: string, patch: Partial<TextAnnotation>) => void;
   onDeleteAnnotation?: (id: string) => void;
+
+  // Movable Block Groups
+  blocks?: BlockItem[];
+  onUpdateBlock?: (id: string, patch: Partial<BlockItem>) => void;
 
   // Sheet data editing
   sheetData?: SheetPreviewData | null;
@@ -52,6 +56,8 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
   onAddAnnotation,
   onUpdateAnnotation,
   onDeleteAnnotation,
+  blocks = [],
+  onUpdateBlock,
   sheetData,
   sheetNames,
   activeSheet,
@@ -123,6 +129,8 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
             onAddAnnotation={onAddAnnotation}
             onUpdateAnnotation={onUpdateAnnotation}
             onDeleteAnnotation={onDeleteAnnotation}
+            blocks={blocks}
+            onUpdateBlock={onUpdateBlock}
             sheetData={sheetData}
             sheetNames={sheetNames}
             activeSheet={activeSheet}

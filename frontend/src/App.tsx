@@ -7,8 +7,16 @@ import {
   LayoutSettings,
   SignaturePlacement,
   TextAnnotation,
-  RecentFile
+  RecentFile,
+  BlockItem
 } from './types';
+
+const DEFAULT_BLOCKS: BlockItem[] = [
+  { id: 'table', name: 'Line Items Table', dx: 0, dy: 0, scale: 1.0, visible: true },
+  { id: 'bill_meta', name: 'Bill # & Date', dx: 0, dy: 0, scale: 1.0, visible: true },
+  { id: 'client_info', name: 'Client Info', dx: 0, dy: 0, scale: 1.0, visible: true },
+  { id: 'bank_notes', name: 'Bank Details & Notes', dx: 0, dy: 0, scale: 1.0, visible: true }
+];
 
 import { Header } from './components/common/Header';
 import { StepIndicator } from './components/common/StepIndicator';
@@ -51,7 +59,8 @@ export function App() {
     scale_factor: 1.0,
     offset_x: 0,
     offset_y: 0,
-    repeat_letterhead: true
+    repeat_letterhead: true,
+    blocks: DEFAULT_BLOCKS
   });
 
   // Preview State
@@ -135,7 +144,7 @@ export function App() {
       } finally {
         setIsLoadingPreview(false);
       }
-    }, 280);
+    }, 75);
 
     return () => {
       if (previewDebounceRef.current) {
@@ -243,6 +252,17 @@ export function App() {
 
   const handleDeleteAnnotation = (id: string) => {
     setAnnotations((prev) => prev.filter((ann) => ann.id !== id));
+  };
+
+  const handleUpdateBlock = (id: string, patch: Partial<BlockItem>) => {
+    setLayout((prev) => {
+      const currentBlocks = prev.blocks || DEFAULT_BLOCKS;
+      const updated = currentBlocks.map((b) => (b.id === id ? { ...b, ...patch } : b));
+      return {
+        ...prev,
+        blocks: updated
+      };
+    });
   };
 
   const handleSelectTemplate = (templateId: string) => {
@@ -370,6 +390,8 @@ export function App() {
                   onAddAnnotation={handleAddAnnotation}
                   onUpdateAnnotation={handleUpdateAnnotation}
                   onDeleteAnnotation={handleDeleteAnnotation}
+                  blocks={layout.blocks || DEFAULT_BLOCKS}
+                  onUpdateBlock={handleUpdateBlock}
                   sheetData={excelData?.preview_grid}
                   sheetNames={excelData?.sheet_names}
                   activeSheet={excelData?.active_sheet}
@@ -398,6 +420,8 @@ export function App() {
                   onAddAnnotation={handleAddAnnotation}
                   onUpdateAnnotation={handleUpdateAnnotation}
                   onDeleteAnnotation={handleDeleteAnnotation}
+                  blocks={layout.blocks || DEFAULT_BLOCKS}
+                  onUpdateBlock={handleUpdateBlock}
                   sheetData={excelData?.preview_grid}
                   sheetNames={excelData?.sheet_names}
                   activeSheet={excelData?.active_sheet}
@@ -423,6 +447,8 @@ export function App() {
                   onAddAnnotation={handleAddAnnotation}
                   onUpdateAnnotation={handleUpdateAnnotation}
                   onDeleteAnnotation={handleDeleteAnnotation}
+                  blocks={layout.blocks || DEFAULT_BLOCKS}
+                  onUpdateBlock={handleUpdateBlock}
                   sheetData={excelData?.preview_grid}
                   sheetNames={excelData?.sheet_names}
                   activeSheet={excelData?.active_sheet}

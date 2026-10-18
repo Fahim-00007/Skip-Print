@@ -22,9 +22,12 @@ os.makedirs(OUTPUTS_DIR, exist_ok=True)
 
 def find_excel_file(excel_file_id: str):
     if excel_file_id == "sample-invoice":
-        sample_path = os.path.join(SAMPLES_DIR, "sample_invoice.xlsx")
+        sample_path = os.path.join(UPLOADS_DIR, "sample-invoice_sample_invoice.xlsx")
         if os.path.exists(sample_path):
             return sample_path, "sample_invoice.xlsx"
+        orig_sample = os.path.join(SAMPLES_DIR, "sample_invoice.xlsx")
+        if os.path.exists(orig_sample):
+            return orig_sample, "sample_invoice.xlsx"
 
     for fname in os.listdir(UPLOADS_DIR):
         if fname.startswith(excel_file_id):
@@ -60,11 +63,13 @@ async def generate_preview(req: RenderPreviewRequest):
     if not excel_path:
         raise HTTPException(status_code=404, detail="Excel file not found.")
 
-    # 1. Convert Excel sheet to temporary raw PDF
+    # 1. Convert Excel sheet to temporary raw PDF (Cached for ultra-fast performance)
     raw_pdf_name = f"raw_{req.excel_file_id}_{req.sheet_name or 'active'}.pdf"
     raw_pdf_path = os.path.join(OUTPUTS_DIR, raw_pdf_name)
 
-    conv_res = convert_excel_to_pdf(excel_path, raw_pdf_path, sheet_name=req.sheet_name)
+    conv_res = {"engine": "Native Excel Vector Engine", "warning": None}
+    if not os.path.exists(raw_pdf_path) or os.path.getsize(raw_pdf_path) == 0:
+        conv_res = convert_excel_to_pdf(excel_path, raw_pdf_path, sheet_name=req.sheet_name)
 
     # 2. Template details
     template_row = get_template_file(req.template_id)
@@ -108,18 +113,19 @@ async def generate_preview(req: RenderPreviewRequest):
         signature_path=sig_path,
         signature_page=sig_page,
         signature_coords=sig_coords,
-        annotations=req.annotations
+        annotations=req.annotations,
+        blocks=req.layout.blocks
     )
 
-    # 5. Render requested page to data URL
-    data_url = render_page_preview_data_url(preview_pdf_path, page_number=req.preview_page)
+    # 5. Render requested page to data URL (at fast DPI for near-instant rendering)
+    data_url = render_page_preview_data_url(preview_pdf_path, page_number=req.preview_page, dpi=115)
 
     return {
         "success": True,
         "total_pages": comp_res["total_pages"],
         "current_page": req.preview_page,
         "preview_data_url": data_url,
-        "engine": conv_res.get("engine"),
+        "engine": conv_res.get("engine", "Native Vector Engine"),
         "warning": conv_res.get("warning")
     }
 
@@ -132,7 +138,9 @@ async def generate_final_pdf(req: RenderGenerateRequest):
     raw_pdf_name = f"raw_{req.excel_file_id}_{req.sheet_name or 'active'}.pdf"
     raw_pdf_path = os.path.join(OUTPUTS_DIR, raw_pdf_name)
 
-    conv_res = convert_excel_to_pdf(excel_path, raw_pdf_path, sheet_name=req.sheet_name)
+    conv_res = {"engine": "Native Excel Vector Engine", "warning": None}
+    if not os.path.exists(raw_pdf_path) or os.path.getsize(raw_pdf_path) == 0:
+        conv_res = convert_excel_to_pdf(excel_path, raw_pdf_path, sheet_name=req.sheet_name)
 
     template_row = get_template_file(req.template_id)
     template_path = template_row["file_path"] if template_row else None
@@ -178,7 +186,8 @@ async def generate_final_pdf(req: RenderGenerateRequest):
         signature_path=sig_path,
         signature_page=sig_page,
         signature_coords=sig_coords,
-        annotations=req.annotations
+        annotations=req.annotations,
+        blocks=req.layout.blocks
     )
 
     file_size = os.path.getsize(output_pdf_path)

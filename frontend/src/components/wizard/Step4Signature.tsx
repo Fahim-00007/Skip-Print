@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Signature, SignaturePlacement, TextAnnotation, SheetPreviewData } from '../../types';
+import { Signature, SignaturePlacement, TextAnnotation, SheetPreviewData, BlockItem } from '../../types';
 import { LivePreview } from '../preview/LivePreview';
 import { Plus, Check, Trash2, ArrowLeft, ArrowRight } from 'lucide-react';
 
@@ -21,6 +21,10 @@ interface Step4SignatureProps {
   onAddAnnotation?: () => void;
   onUpdateAnnotation?: (id: string, patch: Partial<TextAnnotation>) => void;
   onDeleteAnnotation?: (id: string) => void;
+
+  // Movable Block Groups
+  blocks?: BlockItem[];
+  onUpdateBlock?: (id: string, patch: Partial<BlockItem>) => void;
 
   // Sheet data editing
   sheetData?: SheetPreviewData | null;
@@ -50,6 +54,8 @@ export const Step4Signature: React.FC<Step4SignatureProps> = ({
   onAddAnnotation,
   onUpdateAnnotation,
   onDeleteAnnotation,
+  blocks = [],
+  onUpdateBlock,
   sheetData,
   sheetNames,
   activeSheet,
@@ -143,6 +149,8 @@ export const Step4Signature: React.FC<Step4SignatureProps> = ({
             onAddAnnotation={onAddAnnotation}
             onUpdateAnnotation={onUpdateAnnotation}
             onDeleteAnnotation={onDeleteAnnotation}
+            blocks={blocks}
+            onUpdateBlock={onUpdateBlock}
             sheetData={sheetData}
             sheetNames={sheetNames}
             activeSheet={activeSheet}

@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.env
+.venv/
+env/
+venv/
+
+# PyInstaller & Build artifacts
+build/
+dist/BillCraft/
+*.spec
+
+# Node & Frontend
+node_modules/
+frontend/node_modules/
+.tmp/
+*.log
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Keep storage directories structure, ignore runtime temp outputs
+backend/storage/outputs/*
+!backend/storage/outputs/.gitkeep
+backend/storage/test_outputs/*
+!backend/storage/test_outputs/.gitkeep
+backend/storage/uploads/*
+!backend/storage/uploads/.gitkeep
+backend/storage/*.db

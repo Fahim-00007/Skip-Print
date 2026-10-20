@@ -25,7 +25,7 @@ export const RecentFiles: React.FC<RecentFilesProps> = ({
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">Recent Generated Bills</h2>
           <p className="text-sm text-slate-500 mt-1">
@@ -35,7 +35,7 @@ export const RecentFiles: React.FC<RecentFilesProps> = ({
       </div>
 
       {/* Table Card */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
         {recentFiles.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">

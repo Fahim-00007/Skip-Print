@@ -48,7 +48,7 @@ export const SignatureManager: React.FC<SignatureManagerProps> = ({
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       {/* View Header */}
-      <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">Saved Signatures Library</h2>
           <p className="text-sm text-slate-500 mt-1">
@@ -66,7 +66,7 @@ export const SignatureManager: React.FC<SignatureManagerProps> = ({
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
-            className="inline-flex items-center space-x-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-blue-900 text-white hover:bg-blue-800 transition-colors shadow-xs disabled:opacity-50"
+            className="inline-flex items-center space-x-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-xs active:scale-[0.98] disabled:opacity-50"
           >
             <Plus className="w-4 h-4" />
             <span>{isUploading ? 'Uploading...' : 'Upload PNG Signature'}</span>

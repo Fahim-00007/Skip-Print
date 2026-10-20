@@ -67,7 +67,7 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       {/* View Header */}
-      <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">My Letterhead Templates</h2>
           <p className="text-sm text-slate-500 mt-1">
@@ -84,7 +84,7 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
           </button>
           <button
             onClick={() => setIsBuilderOpen(true)}
-            className="inline-flex items-center space-x-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-blue-900 text-white hover:bg-blue-800 transition-colors shadow-xs"
+            className="inline-flex items-center space-x-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-xs active:scale-[0.98]"
           >
             <Sparkles className="w-4 h-4 text-blue-200" />
             <span>Design New Pad</span>
@@ -97,7 +97,7 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
         {templates.map((tpl) => (
           <div
             key={tpl.id}
-            className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col group"
+            className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col group"
           >
             {/* Thumbnail */}
             <div className="h-60 bg-slate-100 p-3 flex items-center justify-center relative border-b border-slate-200 overflow-hidden">

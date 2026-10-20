@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
-import { Download, ExternalLink, CheckCircle, ArrowLeft, RefreshCw, Sparkles, ShieldCheck, Printer, FileCheck } from 'lucide-react';
+import {
+  Download,
+  ExternalLink,
+  CheckCircle2,
+  ArrowLeft,
+  RefreshCw,
+  Printer,
+  FileCheck,
+  ShieldCheck
+} from 'lucide-react';
 import { LivePreview } from '../preview/LivePreview';
-import { TextAnnotation, SheetPreviewData, BlockItem } from '../../types';
+import { SheetPreviewData } from '../../types';
 
 interface Step5ExportProps {
   defaultFilename: string;
@@ -12,16 +21,6 @@ interface Step5ExportProps {
   onPageChange: (page: number) => void;
   engineName?: string;
   warning?: string;
-
-  // Text annotations
-  annotations?: TextAnnotation[];
-  onAddAnnotation?: () => void;
-  onUpdateAnnotation?: (id: string, patch: Partial<TextAnnotation>) => void;
-  onDeleteAnnotation?: (id: string) => void;
-
-  // Movable Block Groups
-  blocks?: BlockItem[];
-  onUpdateBlock?: (id: string, patch: Partial<BlockItem>) => void;
 
   // Sheet data editing
   sheetData?: SheetPreviewData | null;
@@ -41,6 +40,14 @@ interface Step5ExportProps {
   }>;
   onBack: () => void;
   onReset: () => void;
+
+  // Backwards compatibility
+  annotations?: any[];
+  onAddAnnotation?: any;
+  onUpdateAnnotation?: any;
+  onDeleteAnnotation?: any;
+  blocks?: any[];
+  onUpdateBlock?: any;
 }
 
 export const Step5Export: React.FC<Step5ExportProps> = ({
@@ -52,12 +59,6 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
   onPageChange,
   engineName,
   warning,
-  annotations,
-  onAddAnnotation,
-  onUpdateAnnotation,
-  onDeleteAnnotation,
-  blocks = [],
-  onUpdateBlock,
   sheetData,
   sheetNames,
   activeSheet,
@@ -91,21 +92,44 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
     }
   };
 
+  const handleDownload = () => {
+    if (!generationResult) return;
+    const a = document.createElement('a');
+    a.href = generationResult.download_url;
+    a.download = generationResult.filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const handleOpenNewTab = () => {
+    if (!generationResult) return;
+    window.open(generationResult.view_url, '_blank');
+  };
+
+  const handlePrint = () => {
+    if (!generationResult) return;
+    const printWindow = window.open(generationResult.view_url, '_blank');
+    if (printWindow) {
+      printWindow.focus();
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Step Header */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div className="space-y-1">
+      <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
           <div className="flex items-center space-x-2">
-            <span className="w-7 h-7 rounded-full bg-blue-900 text-white flex items-center justify-center font-bold text-sm">
+            <span className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs">
               5
             </span>
-            <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-              Final Review & Download PDF
+            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+              Export Finished PDF
             </h2>
           </div>
-          <p className="text-base text-slate-600 pl-9">
-            Inspect the finished document on the left. When you are happy with it, click the button below to get your PDF!
+          <p className="text-sm text-slate-600 mt-1 pl-8">
+            Your bill has been digitally placed onto your company letterhead. You can download or print it now.
           </p>
         </div>
 
@@ -113,10 +137,10 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
           <button
             type="button"
             onClick={onReset}
-            className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-bold text-slate-700 hover:bg-slate-100 transition-colors shadow-2xs"
+            className="inline-flex items-center space-x-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-2xs transition-all active:scale-[0.98]"
           >
-            <RefreshCw className="w-4 h-4 text-slate-600" />
-            <span>Make Another Bill</span>
+            <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
+            <span>Start Another Bill</span>
           </button>
         )}
       </div>
@@ -124,7 +148,7 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
       {/* Two-panel Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left: Document Preview (7 cols) */}
-        <div className="lg:col-span-7 h-[700px]">
+        <div className="lg:col-span-7 h-[680px]">
           <LivePreview
             previewUrl={previewUrl}
             isLoading={isLoadingPreview || isGenerating}
@@ -133,12 +157,6 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
             onPageChange={onPageChange}
             engineName={engineName}
             warning={warning}
-            annotations={annotations}
-            onAddAnnotation={onAddAnnotation}
-            onUpdateAnnotation={onUpdateAnnotation}
-            onDeleteAnnotation={onDeleteAnnotation}
-            blocks={blocks}
-            onUpdateBlock={onUpdateBlock}
             sheetData={sheetData}
             sheetNames={sheetNames}
             activeSheet={activeSheet}
@@ -149,159 +167,132 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
         </div>
 
         {/* Right: Export Actions (5 cols) */}
-        <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6">
+        <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs space-y-6">
           {!generationResult ? (
             <>
               {/* Output Filename */}
               <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-900 block">
-                  Name for your PDF file:
+                <label className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
+                  PDF Filename:
                 </label>
                 <div className="relative">
                   <input
                     type="text"
                     value={filename}
                     onChange={(e) => setFilename(e.target.value)}
-                    className="w-full text-base font-bold border-2 border-slate-300 rounded-xl px-4 py-3 pr-14 text-slate-900 focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                    placeholder="my_invoice"
+                    className="w-full text-sm font-semibold border border-slate-300 rounded-xl px-3.5 py-2.5 pr-12 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:outline-none"
+                    placeholder="invoice_name"
                   />
-                  <span className="absolute right-4 top-3.5 text-sm font-bold text-slate-400">
+                  <span className="absolute right-3.5 top-3 text-xs font-bold text-slate-400">
                     .pdf
                   </span>
                 </div>
-                <p className="text-xs text-slate-500">
-                  This will be the file name when saved to your computer.
+                <p className="text-xs text-slate-400">
+                  This file will be saved directly into your computer's Downloads folder.
                 </p>
               </div>
 
-              {/* Quality & Reassurance Card */}
-              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 space-y-3">
-                <h4 className="text-sm font-bold text-slate-900 flex items-center space-x-2">
-                  <ShieldCheck className="w-5 h-5 text-emerald-700" />
+              {/* Quality Standards Summary */}
+              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/80 space-y-2.5">
+                <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-1.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
                   <span>Quality Guarantees:</span>
                 </h4>
-                <ul className="text-xs sm:text-sm text-slate-700 space-y-2">
-                  <li className="flex items-center space-x-2.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
-                    <span><strong>Crystal-Clear Text:</strong> Sharp at any zoom level, looks just like real printing.</span>
+                <ul className="text-xs text-slate-600 space-y-1.5 pl-1">
+                  <li className="flex items-center space-x-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+                    <span><strong>100% Vector Text:</strong> Sharp at any zoom level, looks printed.</span>
                   </li>
-                  <li className="flex items-center space-x-2.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
-                    <span><strong>Selectable & Searchable:</strong> Clients can highlight, copy, and search numbers.</span>
+                  <li className="flex items-center space-x-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+                    <span><strong>Selectable:</strong> Numbers and details can be highlighted and copied.</span>
                   </li>
-                  <li className="flex items-center space-x-2.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
-                    <span><strong>Exact Company Letterhead:</strong> Placed cleanly behind your bill.</span>
+                  <li className="flex items-center space-x-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+                    <span><strong>Accurate Placement:</strong> Cleanly aligned with your company pad.</span>
                   </li>
                 </ul>
               </div>
 
-              {/* Giant Generate Button */}
-              <div className="space-y-3 pt-2">
+              {/* Primary Action Button */}
+              <div className="pt-2">
                 <button
                   type="button"
                   onClick={handleGenerateClick}
                   disabled={isGenerating}
-                  className="w-full py-4 px-6 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center space-x-3 active:scale-[0.98] disabled:opacity-50"
+                  className="w-full py-3.5 px-6 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm shadow-xs transition-all flex items-center justify-center space-x-2 active:scale-[0.98] disabled:opacity-50"
                 >
                   {isGenerating ? (
                     <>
-                      <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Creating Your PDF...</span>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Creating Finished PDF...</span>
                     </>
                   ) : (
                     <>
-                      <FileCheck className="w-6 h-6 text-emerald-200" />
+                      <FileCheck className="w-4 h-4 text-blue-400" />
                       <span>Create & Download PDF</span>
                     </>
                   )}
                 </button>
-                <p className="text-center text-xs text-slate-500">
-                  Takes less than 1 second. You can inspect it before sharing.
-                </p>
-              </div>
-
-              {/* Back Button */}
-              <div className="pt-2 flex items-center justify-start">
-                <button
-                  type="button"
-                  onClick={onBack}
-                  className="inline-flex items-center space-x-2 text-sm font-bold text-slate-700 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span>Back to Signature</span>
-                </button>
               </div>
             </>
           ) : (
-            /* Success Card - Extremely Clear for Senior Users */
-            <div className="space-y-6 text-center py-4">
-              <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center shadow-inner">
-                <CheckCircle className="w-12 h-12 stroke-[2.5]" />
-              </div>
-
-              <div className="space-y-1">
-                <h3 className="text-2xl font-extrabold text-slate-900">
-                  Success! Your PDF is Ready.
-                </h3>
-                <p className="text-sm text-slate-600">
-                  Your Excel bill has been digitally printed onto your company letterhead.
-                </p>
-              </div>
-
-              {/* File Info */}
-              <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 text-left space-y-2 text-sm">
-                <div className="flex justify-between py-1 border-b border-slate-200">
-                  <span className="text-slate-500 font-medium">Document Name:</span>
-                  <span className="font-bold text-slate-900">{generationResult.filename}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-slate-200">
-                  <span className="text-slate-500 font-medium">Total Pages:</span>
-                  <span className="font-bold text-slate-900">{generationResult.page_count} Page{generationResult.page_count > 1 ? 's' : ''}</span>
-                </div>
-                <div className="flex justify-between py-1">
-                  <span className="text-slate-500 font-medium">File Size:</span>
-                  <span className="font-bold text-slate-900">
-                    {(generationResult.file_size / 1024).toFixed(1)} KB (Fast to email)
-                  </span>
+            /* Download Ready State */
+            <div className="space-y-6 animate-in fade-in duration-150">
+              <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-950 flex items-center space-x-3">
+                <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
+                <div>
+                  <h4 className="text-sm font-bold text-emerald-950">PDF Ready to Save!</h4>
+                  <p className="text-xs text-emerald-800 mt-0.5">
+                    {generationResult.filename} • {(generationResult.file_size / 1024).toFixed(1)} KB
+                  </p>
                 </div>
               </div>
 
-              {/* Primary Action: Huge Green Download Button */}
-              <div className="space-y-3 pt-2">
-                <a
-                  href={generationResult.download_url}
-                  download={generationResult.filename}
-                  className="w-full py-4 px-6 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center space-x-3 active:scale-[0.98]"
-                >
-                  <Download className="w-6 h-6 text-emerald-200" />
-                  <span>📥 Save PDF to My Computer</span>
-                </a>
+              {/* Main Download Action */}
+              <button
+                type="button"
+                onClick={handleDownload}
+                className="w-full py-3.5 px-6 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm shadow-xs transition-all flex items-center justify-center space-x-2 active:scale-[0.98]"
+              >
+                <Download className="w-4 h-4" />
+                <span>Save PDF to Computer</span>
+              </button>
 
-                <a
-                  href={generationResult.view_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full py-3 px-6 rounded-2xl border-2 border-slate-300 text-slate-800 font-bold text-sm hover:bg-slate-50 transition-all flex items-center justify-center space-x-2"
-                >
-                  <Printer className="w-5 h-5 text-slate-600" />
-                  <span>Open PDF in New Tab / Print</span>
-                </a>
-              </div>
-
-              {/* Start Over Button */}
-              <div className="pt-4 border-t border-slate-200">
+              {/* Secondary Options */}
+              <div className="grid grid-cols-2 gap-3 pt-1">
                 <button
                   type="button"
-                  onClick={onReset}
-                  className="inline-flex items-center space-x-1.5 text-sm font-bold text-blue-900 hover:underline"
+                  onClick={handleOpenNewTab}
+                  className="inline-flex items-center justify-center space-x-1.5 py-2.5 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors shadow-2xs"
                 >
-                  <RefreshCw className="w-4 h-4" />
-                  <span>Convert Another Excel Bill →</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Open in Tab</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handlePrint}
+                  className="inline-flex items-center justify-center space-x-1.5 py-2.5 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors shadow-2xs"
+                >
+                  <Printer className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Print Directly</span>
                 </button>
               </div>
             </div>
           )}
+
+          {/* Footer Back Button */}
+          <div className="pt-3 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={onBack}
+              className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Signature</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

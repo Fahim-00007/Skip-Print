@@ -11,9 +11,11 @@ import {
   ArrowRight as ArrowR,
   ZoomIn,
   ZoomOut,
-  CheckCircle,
-  HelpCircle,
-  Move
+  Move,
+  FileText,
+  Building2,
+  Minimize2,
+  CheckCircle2
 } from 'lucide-react';
 
 interface Step3LayoutProps {
@@ -39,7 +41,7 @@ interface Step3LayoutProps {
   onBack: () => void;
   onContinue: () => void;
 
-  // Deprecated props retained for zero-breakage interface
+  // Deprecated backwards compatibility
   annotations?: any[];
   onAddAnnotation?: any;
   onUpdateAnnotation?: any;
@@ -102,47 +104,35 @@ export const Step3Layout: React.FC<Step3LayoutProps> = ({
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Step Header */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div className="space-y-1">
+      <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
           <div className="flex items-center space-x-2">
-            <span className="w-7 h-7 rounded-full bg-blue-900 text-white flex items-center justify-center font-bold text-sm">
+            <span className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs">
               3
             </span>
-            <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-              Position Your Bill on the Letterhead
+            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+              Position Bill on Letterhead
             </h2>
           </div>
-          <p className="text-base text-slate-600 pl-9">
-            Check the preview on the left. Use the large buttons on the right to move or resize the bill so it fits your company paper.
+          <p className="text-sm text-slate-600 mt-1 pl-8">
+            Check the live preview. Use the position controls to place the bill cleanly without covering your company logo or footer.
           </p>
         </div>
 
         <button
           type="button"
           onClick={handleResetToTemplate}
-          className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-bold text-slate-700 hover:bg-slate-100 transition-colors shrink-0 shadow-2xs"
-          title="Reset position back to original default"
+          className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shrink-0 shadow-2xs active:scale-[0.98]"
         >
-          <RotateCcw className="w-4 h-4 text-slate-600" />
-          <span>Reset to Default</span>
+          <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+          <span>Reset Defaults</span>
         </button>
-      </div>
-
-      {/* Senior-Friendly Quick Instruction Banner */}
-      <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-950 text-sm flex items-start space-x-3">
-        <CheckCircle className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
-        <div>
-          <span className="font-bold">Simple Check:</span>
-          <p className="text-emerald-900 mt-0.5 text-sm">
-            Does your company logo at the top have enough room? If the bill is touching the logo, simply press the big <strong>"Move Down"</strong> button or click <strong>"Space for Tall Logo"</strong>.
-          </p>
-        </div>
       </div>
 
       {/* Two-panel Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left: Document Preview (7 cols) */}
-        <div className="lg:col-span-7 h-[700px]">
+        <div className="lg:col-span-7 h-[680px]">
           <LivePreview
             previewUrl={previewUrl}
             isLoading={isLoadingPreview}
@@ -160,81 +150,84 @@ export const Step3Layout: React.FC<Step3LayoutProps> = ({
           />
         </div>
 
-        {/* Right: Big, Senior-Friendly Position Controls (5 cols) */}
-        <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
-          {/* Quick 1-Click Placement Presets */}
+        {/* Right: Position Controls (5 cols) */}
+        <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs space-y-6">
+          {/* Presets */}
           <div className="space-y-2.5">
-            <label className="text-sm font-bold text-slate-900 block">
-              1-Click Quick Positions:
+            <label className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
+              Quick Positions:
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => onChangeLayout({ margin_top: 105.0, offset_x: 0, offset_y: 0, scale_factor: 1.0 })}
-                className="py-3 px-3 rounded-xl border border-slate-200 hover:border-blue-700 hover:bg-blue-50 text-slate-800 text-xs font-bold text-center transition-all shadow-2xs"
+                className="py-2.5 px-3 rounded-xl border border-slate-200 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold text-center transition-all shadow-2xs active:scale-[0.98] flex flex-col items-center space-y-1"
               >
-                📄 Standard Position
+                <FileText className="w-4 h-4 text-slate-600" />
+                <span>Standard</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => onChangeLayout({ margin_top: 145.0, offset_x: 0, offset_y: 0, scale_factor: 1.0 })}
-                className="py-3 px-3 rounded-xl border border-blue-200 bg-blue-50/70 hover:bg-blue-100 text-blue-950 text-xs font-bold text-center transition-all shadow-2xs"
+                className="py-2.5 px-3 rounded-xl border border-blue-200 bg-blue-50/50 hover:bg-blue-50 text-blue-900 text-xs font-semibold text-center transition-all shadow-2xs active:scale-[0.98] flex flex-col items-center space-y-1"
               >
-                🏛️ Space for Tall Logo
+                <Building2 className="w-4 h-4 text-blue-700" />
+                <span>Tall Logo Room</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => onChangeLayout({ scale_factor: 0.90, offset_x: 0, offset_y: 0 })}
-                className="py-3 px-3 rounded-xl border border-slate-200 hover:border-blue-700 hover:bg-blue-50 text-slate-800 text-xs font-bold text-center transition-all shadow-2xs"
+                className="py-2.5 px-3 rounded-xl border border-slate-200 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold text-center transition-all shadow-2xs active:scale-[0.98] flex flex-col items-center space-y-1"
               >
-                🔍 Compact Bill (90%)
+                <Minimize2 className="w-4 h-4 text-slate-600" />
+                <span>Compact (90%)</span>
               </button>
             </div>
           </div>
 
           {/* Directional Pad */}
-          <div className="space-y-3 pt-2 border-t border-slate-100">
+          <div className="space-y-3 pt-3 border-t border-slate-100">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-bold text-slate-900 flex items-center space-x-1.5">
-                <Move className="w-4 h-4 text-blue-900" />
-                <span>Move Bill Position:</span>
+              <label className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-1.5">
+                <Move className="w-3.5 h-3.5 text-slate-600" />
+                <span>Nudge Position:</span>
               </label>
-              <span className="text-xs font-semibold text-slate-500">
-                Click arrows to nudge
+              <span className="text-[11px] text-slate-400">
+                12pt per click
               </span>
             </div>
 
-            <div className="flex flex-col items-center space-y-2 py-1">
+            <div className="flex flex-col items-center space-y-2 py-2">
               {/* Up Button */}
               <button
                 type="button"
                 onClick={() => handleNudge('up')}
-                className="w-36 py-3 px-4 bg-slate-100 hover:bg-blue-900 hover:text-white text-slate-900 font-bold text-sm rounded-xl border border-slate-300 transition-all shadow-xs flex items-center justify-center space-x-2"
+                className="w-32 py-2.5 px-4 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 transition-all shadow-xs flex items-center justify-center space-x-1.5 active:scale-[0.97]"
                 title="Move bill higher on the page"
               >
-                <ArrowUp className="w-4 h-4" />
+                <ArrowUp className="w-4 h-4 text-slate-700" />
                 <span>Move Up</span>
               </button>
 
-              {/* Middle Row: Left, Reset, Right */}
+              {/* Middle Row */}
               <div className="flex items-center space-x-2">
                 <button
                   type="button"
                   onClick={() => handleNudge('left')}
-                  className="w-28 py-3 px-3 bg-slate-100 hover:bg-blue-900 hover:text-white text-slate-900 font-bold text-sm rounded-xl border border-slate-300 transition-all shadow-xs flex items-center justify-center space-x-1.5"
-                  title="Move bill to the left"
+                  className="w-28 py-2.5 px-3 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 transition-all shadow-xs flex items-center justify-center space-x-1.5 active:scale-[0.97]"
+                  title="Move bill left"
                 >
-                  <ArrowL className="w-4 h-4" />
+                  <ArrowL className="w-4 h-4 text-slate-700" />
                   <span>Left</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={handleResetPosition}
-                  className="py-3 px-3 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl border border-slate-300 transition-all shadow-2xs"
-                  title="Center bill back to middle"
+                  className="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all shadow-2xs active:scale-[0.97]"
+                  title="Reset to center"
                 >
                   Center
                 </button>
@@ -242,11 +235,11 @@ export const Step3Layout: React.FC<Step3LayoutProps> = ({
                 <button
                   type="button"
                   onClick={() => handleNudge('right')}
-                  className="w-28 py-3 px-3 bg-slate-100 hover:bg-blue-900 hover:text-white text-slate-900 font-bold text-sm rounded-xl border border-slate-300 transition-all shadow-xs flex items-center justify-center space-x-1.5"
-                  title="Move bill to the right"
+                  className="w-28 py-2.5 px-3 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 transition-all shadow-xs flex items-center justify-center space-x-1.5 active:scale-[0.97]"
+                  title="Move bill right"
                 >
                   <span>Right</span>
-                  <ArrowR className="w-4 h-4" />
+                  <ArrowR className="w-4 h-4 text-slate-700" />
                 </button>
               </div>
 
@@ -254,22 +247,22 @@ export const Step3Layout: React.FC<Step3LayoutProps> = ({
               <button
                 type="button"
                 onClick={() => handleNudge('down')}
-                className="w-36 py-3 px-4 bg-slate-100 hover:bg-blue-900 hover:text-white text-slate-900 font-bold text-sm rounded-xl border border-slate-300 transition-all shadow-xs flex items-center justify-center space-x-2"
-                title="Move bill lower on the page to leave room for your letterhead logo"
+                className="w-32 py-2.5 px-4 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 transition-all shadow-xs flex items-center justify-center space-x-1.5 active:scale-[0.97]"
+                title="Move bill lower on the page"
               >
-                <ArrowDown className="w-4 h-4" />
+                <ArrowDown className="w-4 h-4 text-slate-700" />
                 <span>Move Down</span>
               </button>
             </div>
           </div>
 
-          {/* Scale Size Controls */}
-          <div className="space-y-3 pt-2 border-t border-slate-100">
+          {/* Scale Size Stepper */}
+          <div className="space-y-2.5 pt-3 border-t border-slate-100">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-bold text-slate-900">
-                Bill Size (Scale):
+              <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                Bill Scale:
               </label>
-              <span className="font-extrabold text-blue-900 text-sm">
+              <span className="font-mono font-bold text-slate-900 text-sm">
                 {Math.round(layout.scale_factor * 100)}%
               </span>
             </div>
@@ -278,49 +271,49 @@ export const Step3Layout: React.FC<Step3LayoutProps> = ({
               <button
                 type="button"
                 onClick={() => handleScale(-0.05)}
-                className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 transition-all shadow-2xs flex items-center justify-center space-x-1.5"
+                className="py-2 px-3 bg-white hover:bg-slate-50 text-slate-800 font-semibold text-xs rounded-xl border border-slate-200 transition-all shadow-2xs flex items-center justify-center space-x-1.5 active:scale-[0.98]"
               >
-                <ZoomOut className="w-4 h-4" />
-                <span>Make Smaller (-5%)</span>
+                <ZoomOut className="w-3.5 h-3.5 text-slate-600" />
+                <span>Smaller (-5%)</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleScale(0.05)}
-                className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 transition-all shadow-2xs flex items-center justify-center space-x-1.5"
+                className="py-2 px-3 bg-white hover:bg-slate-50 text-slate-800 font-semibold text-xs rounded-xl border border-slate-200 transition-all shadow-2xs flex items-center justify-center space-x-1.5 active:scale-[0.98]"
               >
-                <ZoomIn className="w-4 h-4" />
-                <span>Make Bigger (+5%)</span>
+                <ZoomIn className="w-3.5 h-3.5 text-slate-600" />
+                <span>Bigger (+5%)</span>
               </button>
             </div>
           </div>
 
-          {/* Position Status Badge */}
-          <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 flex items-center justify-between">
-            <span className="font-semibold">Current Adjustment:</span>
-            <span className="font-mono font-bold text-slate-900">
-              X: {layout.offset_x > 0 ? `+${layout.offset_x}` : layout.offset_x}pt | Y: {layout.offset_y > 0 ? `+${layout.offset_y}` : layout.offset_y}pt
+          {/* Readout Pill */}
+          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-xs text-slate-600 flex items-center justify-between font-medium">
+            <span>Current Offset:</span>
+            <span className="font-mono font-bold text-slate-800">
+              X: {layout.offset_x >= 0 ? `+${layout.offset_x}` : layout.offset_x}pt • Y: {layout.offset_y >= 0 ? `+${layout.offset_y}` : layout.offset_y}pt
             </span>
           </div>
 
-          {/* Bottom Step Navigation */}
-          <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+          {/* Footer Actions */}
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
             <button
               type="button"
               onClick={onBack}
-              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-5 py-3 rounded-xl border border-slate-300 text-sm font-bold text-slate-700 hover:bg-slate-100 transition-colors"
+              className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Back to Letterhead</span>
+              <span>Back</span>
             </button>
 
             <button
               type="button"
               onClick={onContinue}
-              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-7 py-3.5 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-extrabold text-base shadow-md hover:shadow-lg transition-all"
+              className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm shadow-xs transition-all active:scale-[0.98]"
             >
-              <span>Next: Signature (Optional)</span>
-              <ArrowRight className="w-5 h-5 stroke-[2.5]" />
+              <span>Continue to Signature</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>

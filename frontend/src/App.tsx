@@ -389,12 +389,6 @@ export function App() {
                   onPageChange={setPreviewPage}
                   engineName={engineName}
                   warning={previewWarning}
-                  annotations={annotations}
-                  onAddAnnotation={handleAddAnnotation}
-                  onUpdateAnnotation={handleUpdateAnnotation}
-                  onDeleteAnnotation={handleDeleteAnnotation}
-                  blocks={layout.blocks || DEFAULT_BLOCKS}
-                  onUpdateBlock={handleUpdateBlock}
                   sheetData={excelData?.preview_grid}
                   sheetNames={excelData?.sheet_names}
                   activeSheet={excelData?.active_sheet}
@@ -419,12 +413,6 @@ export function App() {
                   onPageChange={setPreviewPage}
                   engineName={engineName}
                   warning={previewWarning}
-                  annotations={annotations}
-                  onAddAnnotation={handleAddAnnotation}
-                  onUpdateAnnotation={handleUpdateAnnotation}
-                  onDeleteAnnotation={handleDeleteAnnotation}
-                  blocks={layout.blocks || DEFAULT_BLOCKS}
-                  onUpdateBlock={handleUpdateBlock}
                   sheetData={excelData?.preview_grid}
                   sheetNames={excelData?.sheet_names}
                   activeSheet={excelData?.active_sheet}

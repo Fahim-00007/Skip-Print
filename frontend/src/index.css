@@ -38,3 +38,18 @@
   white-space: nowrap;
   font-size: 11px;
 }
+
+/* Senior Mode accessibility enhancements */
+.senior-mode button, 
+.senior-mode a, 
+.senior-mode input, 
+.senior-mode select {
+  touch-action: manipulation;
+}
+
+.senior-mode button:focus-visible,
+.senior-mode input:focus-visible,
+.senior-mode select:focus-visible {
+  outline: 3px solid #1e3a8a !important;
+  outline-offset: 2px !important;
+}

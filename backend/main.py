@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from backend.database import init_db
+from backend.paths import DATA_DIR, FRONTEND_DIST
 from backend.routers import excel, templates, signatures, generator, recent
 
 # Initialize SQLite database
@@ -37,8 +38,7 @@ app.include_router(generator.router)
 app.include_router(recent.router)
 
 # Mount Storage directory for static assets
-storage_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "storage")
-app.mount("/storage", StaticFiles(directory=storage_dir), name="storage")
+app.mount("/storage", StaticFiles(directory=DATA_DIR), name="storage")
 
 # Health check
 @app.get("/api/health")
@@ -60,9 +60,8 @@ async def health_check():
     }
 
 # Check if production frontend is built
-frontend_dist = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend", "dist")
-if os.path.exists(frontend_dist):
-    app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend")
+if os.path.exists(FRONTEND_DIST):
+    app.mount("/", StaticFiles(directory=FRONTEND_DIST, html=True), name="frontend")
 else:
     @app.get("/")
     async def root():

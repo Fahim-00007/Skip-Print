@@ -12,13 +12,9 @@ from backend.database import get_db
 from backend.models import RenderPreviewRequest, RenderGenerateRequest
 from backend.services.excel_converter import convert_excel_to_pdf
 from backend.services.pdf_composer import compose_document, render_page_preview_data_url
+from backend.paths import OUTPUTS_DIR, SAMPLES_DIR, UPLOADS_DIR
 
 router = APIRouter(prefix="/api/render", tags=["Generator"])
-
-UPLOADS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "storage", "uploads")
-OUTPUTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "storage", "outputs")
-SAMPLES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "samples")
-os.makedirs(OUTPUTS_DIR, exist_ok=True)
 
 def find_excel_file(excel_file_id: str):
     if excel_file_id == "sample-invoice":

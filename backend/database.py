@@ -8,9 +8,7 @@ import json
 import uuid
 from datetime import datetime
 
-DB_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "storage")
-DB_PATH = os.path.join(DB_DIR, "billcraft.db")
-os.makedirs(DB_DIR, exist_ok=True)
+from backend.paths import DB_PATH, ensure_sample_assets
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
@@ -84,7 +82,7 @@ def init_db():
 
 def seed_samples(cursor):
     now = datetime.now().isoformat()
-    samples_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "samples")
+    samples_dir = ensure_sample_assets()
     pdf_lh = os.path.join(samples_dir, "sample_letterhead.pdf")
     png_lh = os.path.join(samples_dir, "sample_letterhead.png")
     sig_png = os.path.join(samples_dir, "sample_signature.png")

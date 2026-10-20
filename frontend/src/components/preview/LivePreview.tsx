@@ -220,19 +220,19 @@ export const LivePreview: React.FC<LivePreviewProps> = ({
   return (
     <div className="flex flex-col h-full bg-slate-100/70 rounded-xl border border-slate-200 overflow-hidden shadow-inner select-none">
       {/* Top Toolbar */}
-      <div className="flex flex-wrap items-center justify-between px-3 py-2 bg-white border-b border-slate-200 text-xs gap-2">
+      <div className="flex flex-wrap items-center justify-between px-4 py-3 bg-white border-b border-slate-200 text-sm gap-3">
         {/* View Mode Switcher */}
-        <div className="flex items-center space-x-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+        <div className="flex items-center space-x-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
           <button
             type="button"
             onClick={() => setViewMode('preview')}
-            className={`flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${
               viewMode === 'preview'
                 ? 'bg-white text-blue-900 shadow-xs'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <FileText className="w-3.5 h-3.5" />
+            <FileText className="w-4 h-4 text-blue-800" />
             <span>Document Preview</span>
           </button>
 
@@ -240,27 +240,27 @@ export const LivePreview: React.FC<LivePreviewProps> = ({
             <button
               type="button"
               onClick={() => setViewMode('edit_cells')}
-              className={`flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${
                 viewMode === 'edit_cells'
                   ? 'bg-blue-900 text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Edit3 className="w-3.5 h-3.5" />
-              <span>Edit Bill Cells</span>
+              <Edit3 className="w-4 h-4" />
+              <span>Edit Bill Text</span>
             </button>
           )}
         </div>
 
         {/* Movable Element Quick Selector Pills */}
         {viewMode === 'preview' && (
-          <div className="hidden sm:flex items-center space-x-1 overflow-x-auto">
-            <span className="text-[10px] text-slate-400 font-semibold uppercase mr-1">Move:</span>
+          <div className="hidden lg:flex items-center space-x-1.5 overflow-x-auto">
+            <span className="text-xs text-slate-500 font-bold uppercase tracking-wider mr-1">Move:</span>
             {[
               { id: 'table', label: 'Table', icon: Table },
-              { id: 'bill_meta', label: 'Bill #', icon: Calendar },
+              { id: 'bill_meta', label: 'Bill # / Date', icon: Calendar },
               { id: 'client_info', label: 'Client', icon: UserCheck },
-              { id: 'bank_notes', label: 'Bank', icon: CreditCard },
+              { id: 'bank_notes', label: 'Bank Info', icon: CreditCard },
             ].map((item) => {
               const Icon = item.icon;
               const isSelected = activeElement === `block:${item.id}`;
@@ -271,18 +271,18 @@ export const LivePreview: React.FC<LivePreviewProps> = ({
                   key={item.id}
                   type="button"
                   onClick={() => setActiveElement(isSelected ? null : `block:${item.id}`)}
-                  className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[11px] font-medium transition-all ${
+                  className={`inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
                     isSelected
-                      ? 'bg-blue-900 text-white shadow-xs font-semibold'
+                      ? 'bg-blue-900 text-white shadow-xs'
                       : isMoved
-                      ? 'bg-blue-50 text-blue-800 border border-blue-200'
+                      ? 'bg-blue-50 text-blue-900 border border-blue-200'
                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                   }`}
                   title={`Select and move ${item.label}`}
                 >
-                  <Icon className="w-3 h-3" />
+                  <Icon className="w-3.5 h-3.5" />
                   <span>{item.label}</span>
-                  {isMoved && <span className="w-1.5 h-1.5 rounded-full bg-blue-500 ml-0.5" />}
+                  {isMoved && <span className="w-2 h-2 rounded-full bg-blue-600 ml-0.5" />}
                 </button>
               );
             })}
@@ -291,51 +291,68 @@ export const LivePreview: React.FC<LivePreviewProps> = ({
 
         {/* Right Tools: Zoom, Page Navigation & Add Note */}
         {viewMode === 'preview' && (
-          <div className="flex items-center space-x-1.5">
+          <div className="flex items-center space-x-2">
             {onAddAnnotation && (
               <button
                 type="button"
                 onClick={onAddAnnotation}
-                className="inline-flex items-center space-x-1 px-2 py-1 rounded border border-slate-300 text-slate-700 hover:bg-slate-50 font-medium text-xs shadow-2xs"
+                className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-slate-300 text-slate-800 hover:bg-slate-50 font-bold text-xs shadow-2xs"
                 title="Add a custom text note or stamp onto the bill"
               >
-                <Type className="w-3.5 h-3.5 text-blue-800" />
-                <span>+ Text Note</span>
+                <Type className="w-4 h-4 text-blue-800" />
+                <span>+ Add Note</span>
               </button>
             )}
 
             {totalPages > 1 && (
-              <div className="flex items-center space-x-1 bg-slate-100 rounded p-0.5 border border-slate-200">
+              <div className="flex items-center space-x-1 bg-slate-100 rounded-lg p-1 border border-slate-200">
                 <button
                   onClick={() => onPageChange(Math.max(1, currentPage - 1))}
                   disabled={currentPage <= 1 || isLoading}
-                  className="p-1 rounded hover:bg-white text-slate-600 disabled:opacity-30"
+                  className="px-2 py-1 rounded-md hover:bg-white text-slate-700 disabled:opacity-30 flex items-center space-x-0.5 text-xs font-bold"
+                  title="Previous Page"
                 >
-                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <ChevronLeft className="w-4 h-4" />
+                  <span className="hidden sm:inline">Prev</span>
                 </button>
-                <span className="font-semibold text-slate-700 px-1 text-[11px]">
-                  {currentPage}/{totalPages}
+                <span className="font-bold text-slate-800 px-2 text-xs">
+                  Page {currentPage} of {totalPages}
                 </span>
                 <button
                   onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage >= totalPages || isLoading}
-                  className="p-1 rounded hover:bg-white text-slate-600 disabled:opacity-30"
+                  className="px-2 py-1 rounded-md hover:bg-white text-slate-700 disabled:opacity-30 flex items-center space-x-0.5 text-xs font-bold"
+                  title="Next Page"
                 >
-                  <ChevronRight className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Next</span>
+                  <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
             )}
 
-            <div className="flex items-center space-x-0.5 bg-slate-100 rounded p-0.5 border border-slate-200">
-              <button onClick={handleZoomOut} className="p-1 rounded hover:bg-white text-slate-600" title="Zoom Out">
-                <ZoomOut className="w-3 h-3" />
+            <div className="flex items-center space-x-1 bg-slate-100 rounded-lg p-1 border border-slate-200">
+              <button
+                onClick={handleZoomOut}
+                className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-white text-slate-700 font-bold"
+                title="Zoom Out (Make Smaller)"
+              >
+                <ZoomOut className="w-4 h-4" />
               </button>
-              <span className="w-8 text-center font-medium text-slate-700 text-[10px]">{zoom}%</span>
-              <button onClick={handleZoomIn} className="p-1 rounded hover:bg-white text-slate-600" title="Zoom In">
-                <ZoomIn className="w-3 h-3" />
+              <span className="w-12 text-center font-bold text-slate-800 text-xs">{zoom}%</span>
+              <button
+                onClick={handleZoomIn}
+                className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-white text-slate-700 font-bold"
+                title="Zoom In (Make Bigger)"
+              >
+                <ZoomIn className="w-4 h-4" />
               </button>
-              <button onClick={handleResetZoom} className="p-1 rounded hover:bg-white text-slate-600 border-l border-slate-300 ml-0.5 pl-0.5" title="Reset Zoom">
-                <RotateCcw className="w-3 h-3" />
+              <button
+                onClick={handleResetZoom}
+                className="h-7 px-1.5 flex items-center justify-center rounded-md hover:bg-white text-slate-600 border-l border-slate-300 ml-1 text-xs font-medium"
+                title="Reset Zoom to 100%"
+              >
+                <RotateCcw className="w-3.5 h-3.5 mr-1" />
+                <span>100%</span>
               </button>
             </div>
           </div>

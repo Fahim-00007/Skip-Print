@@ -9,11 +9,9 @@ from datetime import datetime
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from fastapi.responses import FileResponse
 from backend.database import get_db
+from backend.paths import SIGNATURES_DIR
 
 router = APIRouter(prefix="/api/signatures", tags=["Signatures"])
-
-SIGNATURES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "storage", "signatures")
-os.makedirs(SIGNATURES_DIR, exist_ok=True)
 
 @router.get("")
 async def list_signatures():

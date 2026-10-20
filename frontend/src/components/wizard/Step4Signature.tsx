@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Signature, SignaturePlacement, TextAnnotation, SheetPreviewData, BlockItem } from '../../types';
 import { LivePreview } from '../preview/LivePreview';
-import { Plus, Check, Trash2, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Plus, Check, Trash2, ArrowLeft, ArrowRight, ShieldCheck, PenTool, CheckCircle, ZoomIn, ZoomOut, MoveRight, MoveLeft } from 'lucide-react';
 
 interface Step4SignatureProps {
   signatures: Signature[];
@@ -101,38 +101,71 @@ export const Step4Signature: React.FC<Step4SignatureProps> = ({
     });
   };
 
+  const handlePresetPosition = (preset: 'bottom_right' | 'bottom_left') => {
+    if (!signaturePlacement) return;
+    if (preset === 'bottom_right') {
+      handleUpdatePlacement({ x: 380, y: 670 });
+    } else if (preset === 'bottom_left') {
+      handleUpdatePlacement({ x: 60, y: 670 });
+    }
+  };
+
+  const handleScaleSignature = (delta: number) => {
+    if (!signaturePlacement) return;
+    const factor = delta > 0 ? 1.15 : 0.85;
+    const newWidth = Math.round(signaturePlacement.width * factor);
+    const newHeight = Math.round(signaturePlacement.height * factor);
+    handleUpdatePlacement({ width: newWidth, height: newHeight });
+  };
+
   return (
-    <div className="max-w-7xl mx-auto space-y-4">
+    <div className="max-w-7xl mx-auto space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-xl p-4 sm:p-5 border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Step 4: Add Authorized Signature (Optional)</h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Place your transparent PNG signature onto the bill. Drag directly on the document preview to position it.
+      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center space-x-2">
+            <span className="w-7 h-7 rounded-full bg-blue-900 text-white flex items-center justify-center font-bold text-sm">
+              4
+            </span>
+            <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+              Add Your Signature (Optional)
+            </h2>
+          </div>
+          <p className="text-base text-slate-600 pl-9">
+            If you want your signature on the bill, pick it below. If you don't need one, you can skip right to download!
           </p>
         </div>
-        <div className="flex items-center space-x-2">
-          {signaturePlacement ? (
-            <button
-              type="button"
-              onClick={() => onChangeSignature(null)}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-red-200 bg-red-50 text-xs font-semibold text-red-700 hover:bg-red-100 transition-colors"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>Remove Signature</span>
-            </button>
-          ) : (
-            <span className="text-xs font-medium text-slate-400 bg-slate-100 px-3 py-1 rounded-full">
-              No signature added (Optional)
-            </span>
-          )}
+
+        {signaturePlacement ? (
+          <button
+            type="button"
+            onClick={() => onChangeSignature(null)}
+            className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl border border-red-200 bg-red-50 text-sm font-bold text-red-700 hover:bg-red-100 transition-colors shadow-2xs"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>Remove Signature</span>
+          </button>
+        ) : (
+          <div className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-sm font-medium border border-slate-200">
+            No signature added yet (Optional)
+          </div>
+        )}
+      </div>
+
+      {/* Reassurance Banner */}
+      <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-950 text-sm flex items-center justify-between">
+        <div className="flex items-center space-x-2.5">
+          <ShieldCheck className="w-5 h-5 text-emerald-700 shrink-0" />
+          <span className="font-medium">
+            <strong>Don't need a signature?</strong> No problem at all! Just click the big button at the bottom to continue directly to your finished PDF.
+          </span>
         </div>
       </div>
 
       {/* Two-panel Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left: Document Preview with Draggable Signature (7 cols) */}
-        <div className="lg:col-span-7 h-[680px]">
+        <div className="lg:col-span-7 h-[700px]">
           <LivePreview
             previewUrl={previewUrl}
             isLoading={isLoadingPreview}
@@ -161,17 +194,17 @@ export const Step4Signature: React.FC<Step4SignatureProps> = ({
         </div>
 
         {/* Right: Signature Controls (5 cols) */}
-        <div className="lg:col-span-5 bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-5">
+        <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
           {/* Select Signature */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                Select Signature
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-bold text-slate-900">
+                1. Select a Saved Signature:
               </label>
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="inline-flex items-center space-x-1 text-xs text-blue-800 hover:text-blue-950 font-semibold"
+                className="inline-flex items-center space-x-1.5 text-xs text-blue-900 hover:text-blue-950 font-bold bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Upload New (PNG)</span>
@@ -185,32 +218,32 @@ export const Step4Signature: React.FC<Step4SignatureProps> = ({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto p-1">
+            <div className="grid grid-cols-2 gap-3 max-h-56 overflow-y-auto p-1">
               {signatures.map((sig) => {
                 const isSelected = signaturePlacement?.signature_id === sig.id;
                 return (
                   <div
                     key={sig.id}
                     onClick={() => handleSelectSignature(sig.id)}
-                    className={`relative p-2 rounded-lg border-2 cursor-pointer transition-all flex flex-col items-center justify-center bg-slate-50/60 hover:bg-slate-50 ${
+                    className={`relative p-3 rounded-xl border-2 cursor-pointer transition-all flex flex-col items-center justify-center bg-slate-50/60 hover:bg-slate-50 ${
                       isSelected
-                        ? 'border-blue-900 ring-2 ring-blue-900/20 bg-blue-50/30'
+                        ? 'border-blue-900 ring-4 ring-blue-900/15 bg-blue-50/40'
                         : 'border-slate-200 hover:border-slate-300'
                     }`}
                   >
-                    <div className="h-16 w-full flex items-center justify-center p-1 bg-white rounded border border-slate-200/80 shadow-2xs">
+                    <div className="h-16 w-full flex items-center justify-center p-1 bg-white rounded-lg border border-slate-200 shadow-2xs">
                       <img
                         src={sig.url}
                         alt={sig.name}
                         className="max-h-full max-w-full object-contain"
                       />
                     </div>
-                    <span className="text-[11px] font-medium text-slate-800 truncate w-full text-center mt-1.5">
+                    <span className="text-xs font-bold text-slate-800 truncate w-full text-center mt-2">
                       {sig.name}
                     </span>
                     {isSelected && (
-                      <div className="absolute top-1 right-1 w-4 h-4 rounded-full bg-blue-900 text-white flex items-center justify-center">
-                        <Check className="w-2.5 h-2.5 stroke-[3]" />
+                      <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-blue-900 text-white flex items-center justify-center shadow-xs">
+                        <Check className="w-3 h-3 stroke-[3]" />
                       </div>
                     )}
                   </div>
@@ -219,167 +252,101 @@ export const Step4Signature: React.FC<Step4SignatureProps> = ({
             </div>
           </div>
 
-          {/* Placement Settings */}
-          {signaturePlacement && (
-            <div className="space-y-4 pt-3 border-t border-slate-100">
-              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
-                Placement & Target Page
-              </label>
+          {/* Quick Placement & Size Buttons */}
+          {signaturePlacement ? (
+            <div className="p-5 bg-slate-50 rounded-2xl border-2 border-slate-200 space-y-4">
+              <h4 className="text-sm font-bold text-slate-900 pb-2 border-b border-slate-200">
+                2. Position & Size of Signature:
+              </h4>
+
+              <div className="space-y-2">
+                <p className="text-xs font-bold text-slate-700">Quick 1-Click Placement:</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => handlePresetPosition('bottom_right')}
+                    className="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-100 border-2 border-slate-300 text-slate-800 font-bold text-xs shadow-xs transition-all flex items-center justify-center space-x-1.5"
+                  >
+                    <MoveRight className="w-4 h-4 text-blue-900" />
+                    <span>Bottom-Right (Standard)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handlePresetPosition('bottom_left')}
+                    className="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-100 border-2 border-slate-300 text-slate-800 font-bold text-xs shadow-xs transition-all flex items-center justify-center space-x-1.5"
+                  >
+                    <MoveLeft className="w-4 h-4 text-blue-900" />
+                    <span>Bottom-Left</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2 pt-2 border-t border-slate-200">
+                <p className="text-xs font-bold text-slate-700">Signature Size:</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => handleScaleSignature(-1)}
+                    className="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-100 border-2 border-slate-300 text-slate-800 font-bold text-xs shadow-xs transition-all flex items-center justify-center space-x-1.5"
+                  >
+                    <ZoomOut className="w-4 h-4 text-slate-600" />
+                    <span>Make Smaller</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleScaleSignature(1)}
+                    className="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-100 border-2 border-slate-300 text-slate-800 font-bold text-xs shadow-xs transition-all flex items-center justify-center space-x-1.5"
+                  >
+                    <ZoomIn className="w-4 h-4 text-slate-600" />
+                    <span>Make Bigger</span>
+                  </button>
+                </div>
+              </div>
 
               {/* Target Page */}
-              <div>
-                <label className="text-xs font-medium text-slate-600 block mb-1">
-                  Place Signature On:
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleUpdatePlacement({ page: 'last' })}
-                    className={`py-1.5 px-2 rounded-lg border text-xs font-medium transition-all ${
-                      signaturePlacement.page === 'last'
-                        ? 'bg-blue-900 text-white border-blue-900 font-semibold'
-                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                    }`}
-                  >
-                    Last Page (Standard)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleUpdatePlacement({ page: '1' })}
-                    className={`py-1.5 px-2 rounded-lg border text-xs font-medium transition-all ${
-                      signaturePlacement.page === '1'
-                        ? 'bg-blue-900 text-white border-blue-900 font-semibold'
-                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                    }`}
-                  >
-                    First Page
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleUpdatePlacement({ page: 'all' })}
-                    className={`py-1.5 px-2 rounded-lg border text-xs font-medium transition-all ${
-                      signaturePlacement.page === 'all'
-                        ? 'bg-blue-900 text-white border-blue-900 font-semibold'
-                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                    }`}
-                  >
-                    All Pages
-                  </button>
-                </div>
+              <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-xs">
+                <span className="text-slate-600 font-medium">Show signature on:</span>
+                <select
+                  value={signaturePlacement.page}
+                  onChange={(e) => handleUpdatePlacement({ page: e.target.value })}
+                  className="bg-white border border-slate-300 rounded-lg px-3 py-1.5 font-bold text-slate-800"
+                >
+                  <option value="last">Last Page Only (Normal)</option>
+                  <option value="all">Every Page</option>
+                  <option value="1">Page 1</option>
+                </select>
               </div>
-
-              {/* Size Controls */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-slate-600 font-medium">Width (pt):</span>
-                    <span className="font-semibold text-slate-800">{signaturePlacement.width}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="60"
-                    max="250"
-                    step="5"
-                    value={signaturePlacement.width}
-                    onChange={(e) => handleUpdatePlacement({ width: Number(e.target.value) })}
-                    className="w-full accent-blue-900 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
-                  />
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-slate-600 font-medium">Height (pt):</span>
-                    <span className="font-semibold text-slate-800">{signaturePlacement.height}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="30"
-                    max="150"
-                    step="5"
-                    value={signaturePlacement.height}
-                    onChange={(e) => handleUpdatePlacement({ height: Number(e.target.value) })}
-                    className="w-full accent-blue-900 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
-                  />
-                </div>
-              </div>
-
-              {/* Opacity & Rotation */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-slate-600 font-medium">Opacity:</span>
-                    <span className="font-semibold text-slate-800">{Math.round(signaturePlacement.opacity * 100)}%</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0.2"
-                    max="1.0"
-                    step="0.05"
-                    value={signaturePlacement.opacity}
-                    onChange={(e) => handleUpdatePlacement({ opacity: Number(e.target.value) })}
-                    className="w-full accent-blue-900 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
-                  />
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-slate-600 font-medium">Rotation:</span>
-                    <span className="font-semibold text-slate-800">{signaturePlacement.rotation}°</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="-45"
-                    max="45"
-                    step="5"
-                    value={signaturePlacement.rotation}
-                    onChange={(e) => handleUpdatePlacement({ rotation: Number(e.target.value) })}
-                    className="w-full accent-blue-900 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
-                  />
-                </div>
-              </div>
-
-              {/* Numerical fine-tuning */}
-              <div className="grid grid-cols-2 gap-3 bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs">
-                <div>
-                  <label className="text-[11px] text-slate-500 block mb-0.5">X Position (pt):</label>
-                  <input
-                    type="number"
-                    value={signaturePlacement.x}
-                    onChange={(e) => handleUpdatePlacement({ x: Number(e.target.value) })}
-                    className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-slate-800 font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] text-slate-500 block mb-0.5">Y Position (pt):</label>
-                  <input
-                    type="number"
-                    value={signaturePlacement.y}
-                    onChange={(e) => handleUpdatePlacement({ y: Number(e.target.value) })}
-                    className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-slate-800 font-mono"
-                  />
-                </div>
-              </div>
+            </div>
+          ) : (
+            <div className="p-5 bg-blue-50/60 rounded-2xl border border-blue-200 text-center space-y-2">
+              <PenTool className="w-8 h-8 text-blue-900 mx-auto" />
+              <p className="text-sm font-bold text-slate-800">No Signature Selected</p>
+              <p className="text-xs text-slate-600">
+                You can select one of the saved signatures above, or simply click the button below to continue without a signature.
+              </p>
             </div>
           )}
 
           {/* Navigation Buttons */}
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-200">
             <button
               type="button"
               onClick={onBack}
-              className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors"
+              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-5 py-3 rounded-xl border border-slate-300 text-slate-700 text-sm font-bold hover:bg-slate-50 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Back</span>
+              <span>Back to Layout</span>
             </button>
 
             <button
               type="button"
               onClick={onContinue}
-              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-blue-900 text-white text-xs font-semibold hover:bg-blue-800 shadow-sm transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-8 py-3.5 rounded-xl bg-blue-900 text-white text-base font-extrabold hover:bg-blue-800 shadow-md hover:shadow-lg transition-all"
             >
-              <span>Review & Export PDF</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>{signaturePlacement ? 'Continue to Final Review' : 'Skip & Finish PDF (No Signature)'}</span>
+              <ArrowRight className="w-5 h-5 stroke-[2.5]" />
             </button>
           </div>
         </div>

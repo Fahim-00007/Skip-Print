@@ -78,6 +78,7 @@ Traditional invoicing often involves printing Excel bills onto physical pre-prin
 BillCraft/
 ├── backend/
 │   ├── main.py                     # FastAPI server & static file host
+│   ├── paths.py                    # Dev/frozen paths & writable user-data folder
 │   ├── database.py                 # SQLite database setup & seed data
 │   ├── models.py                   # Pydantic schemas
 │   ├── requirements.txt            # Python dependencies
@@ -115,14 +116,115 @@ BillCraft/
 │   │   └── types/index.ts          # TypeScript interfaces
 │   ├── dist/                       # Pre-built production frontend bundle
 │   └── package.json
-├── run_app.py                      # One-command fullstack application launcher
-├── start.bat                       # Windows one-click batch launcher
+├── assets/
+│   ├── billcraft.ico                # Application & installer icon
+│   ├── billcraft.png
+│   ├── wizard-large.bmp             # Installer artwork
+│   ├── wizard-small.bmp
+│   └── generate_icon.py             # Regenerates all icon/artwork assets
+├── installer/
+│   └── BillCraft.iss                # Inno Setup installer definition
+├── dist/BillCraft/                  # Built desktop app (git-ignored)
+├── desktop_app.py                   # Native Windows desktop window launcher
+├── build_installer.ps1              # One-command release build script
+├── BillCraft.spec                   # PyInstaller build definition
+├── version_info.txt                 # Windows executable metadata
+├── run_app.py                       # Browser-based fullstack launcher
+├── start.bat                        # Windows one-click batch launcher
 └── README.md
 ```
 
 ---
 
-## Installation & Quick Start
+## Windows Desktop App (Recommended)
+
+BillCraft installs like a normal Windows application: no terminal, no Python,
+and no browser tabs.
+
+### Install
+
+1. Double-click **`installer\output\BillCraft-Setup-1.0.0.exe`**.
+2. Follow the setup wizard.
+3. Launch **BillCraft** from the **desktop shortcut** or the Start menu.
+
+The installer is per-user, so it does **not** require administrator rights. It
+creates:
+
+- `%LOCALAPPDATA%\Programs\BillCraft\BillCraft.exe`
+- A **BillCraft** icon on your desktop
+- A **BillCraft** entry in the Start menu, including an uninstaller
+
+### Requirements
+
+- Windows 10 or Windows 11, 64-bit.
+- Microsoft Edge **WebView2 Runtime** (included with Windows 11 and current
+  Windows 10; the installer offers a download link if it is missing).
+- Microsoft Excel is optional. When installed it is used for perfect Excel
+  layout fidelity; otherwise BillCraft falls back to its built-in PDF engine.
+
+### Where your data lives
+
+Your database, saved templates, signatures, uploads, and generated PDFs are
+stored privately in:
+
+```
+%LOCALAPPDATA%\BillCraft\
+├── billcraft.db
+├── logs\app.log
+├── outputs\
+├── samples\
+├── signatures\
+├── templates\
+└── uploads\
+```
+
+This folder is **not** deleted when you uninstall, so your templates and
+history survive upgrades. Use **Settings → Clear Temp Cache** inside the app
+to remove intermediate preview files.
+
+### Uninstall
+
+Open **Settings → Apps → Installed apps → BillCraft → Uninstall**, or use the
+uninstaller in the Start menu folder.
+
+---
+
+## Build the Desktop Installer
+
+The built setup file is ready to use. To rebuild it after changing the
+source code:
+
+```powershell
+# One-time build dependencies
+py -m pip install -r backend/requirements.txt pyinstaller pywebview
+winget install JRSoftware.InnoSetup
+
+# Build frontend + EXE + installer
+powershell -ExecutionPolicy Bypass -File .\build_installer.ps1
+```
+
+Outputs:
+
+- Desktop executable: `dist\BillCraft\BillCraft.exe`
+- Windows setup file: `installer\output\BillCraft-Setup-1.0.0.exe`
+
+Useful switches for faster rebuilds:
+
+```powershell
+# Skip rebuilding the React frontend
+powershell -ExecutionPolicy Bypass -File .\build_installer.ps1 -SkipFrontend
+
+# Only recompile the installer from an existing dist\BillCraft folder
+powershell -ExecutionPolicy Bypass -File .\build_installer.ps1 -SkipFrontend -SkipExe
+```
+
+> **Note:** The setup file is not code-signed. Windows SmartScreen may show a
+> "Windows protected your PC" warning on first run. Click **More info → Run
+> anyway**, or sign the installer with your own code-signing certificate.
+
+---
+
+## Development Setup
 
 ### 1. Install Backend Dependencies
 
@@ -130,9 +232,16 @@ BillCraft/
 py -m pip install -r backend/requirements.txt
 ```
 
-### 2. Launch the Application
+### 2. Launch in the Native Desktop Window
 
-Run the launcher script:
+```bash
+py desktop_app.py
+```
+
+*(Or double-click `Launch-Desktop-App.bat` on Windows.)*
+
+### 3. Launch in Your Browser (alternative)
+
 ```bash
 py run_app.py
 ```
@@ -140,7 +249,7 @@ py run_app.py
 
 The application starts on **`http://127.0.0.1:8000`** and opens automatically in your web browser.
 
-### 3. (Optional) Run Frontend in Development Mode
+### 4. (Optional) Run Frontend in Development Mode
 
 If you wish to edit the frontend with live Hot Module Replacement (HMR):
 ```bash

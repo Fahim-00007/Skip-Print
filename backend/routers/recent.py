@@ -5,10 +5,9 @@ Manages generation history, file cleanup, and user preferences.
 import os
 from fastapi import APIRouter, HTTPException
 from backend.database import get_db
+from backend.paths import OUTPUTS_DIR
 
 router = APIRouter(prefix="/api/recent", tags=["Recent"])
-
-OUTPUTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "storage", "outputs")
 
 @router.get("")
 async def get_recent_files():

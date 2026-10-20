@@ -10,7 +10,9 @@ venv/
 # PyInstaller & Build artifacts
 build/
 dist/BillCraft/
+installer/output/
 *.spec
+!BillCraft.spec
 
 # Node & Frontend
 node_modules/
@@ -32,3 +34,7 @@ backend/storage/test_outputs/*
 backend/storage/uploads/*
 !backend/storage/uploads/.gitkeep
 backend/storage/*.db
+
+*.exe
+**/scripts/bin/
+.taste-skill/

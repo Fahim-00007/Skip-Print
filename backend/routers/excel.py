@@ -9,14 +9,11 @@ import openpyxl
 from fastapi import APIRouter, UploadFile, File, HTTPException, Query
 from backend.services.excel_reader import inspect_workbook, get_sheet_preview
 from backend.models import BatchCellUpdateRequest, CellUpdateItem
+from backend.paths import OUTPUTS_DIR, SAMPLES_DIR, UPLOADS_DIR
 
 router = APIRouter(prefix="/api/excel", tags=["Excel"])
 
-STORAGE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "storage", "uploads")
-OUTPUTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "storage", "outputs")
-SAMPLES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "samples")
-os.makedirs(STORAGE_DIR, exist_ok=True)
-os.makedirs(OUTPUTS_DIR, exist_ok=True)
+STORAGE_DIR = UPLOADS_DIR
 
 def find_file_path(file_id: str):
     if file_id == "sample-invoice":

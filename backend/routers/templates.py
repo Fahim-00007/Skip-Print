@@ -12,11 +12,9 @@ from fastapi.responses import FileResponse
 from backend.database import get_db
 from backend.models import CustomTemplateBuildRequest, TemplateUpdateMarginsRequest
 from backend.services.template_renderer import render_custom_template_pdf, generate_preview_image
+from backend.paths import TEMPLATES_DIR
 
 router = APIRouter(prefix="/api/templates", tags=["Templates"])
-
-TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "storage", "templates")
-os.makedirs(TEMPLATES_DIR, exist_ok=True)
 
 @router.get("")
 async def list_templates():

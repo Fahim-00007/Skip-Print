@@ -36,6 +36,7 @@ import { SettingsView } from './components/settings/SettingsView';
 export function App() {
   const [activeTab, setActiveTab] = useState<'wizard' | 'templates' | 'signatures' | 'recent' | 'settings'>('wizard');
   const [wizardStep, setWizardStep] = useState<number>(1);
+  const [seniorMode, setSeniorMode] = useState<boolean>(true);
 
   // Core Data
   const [excelData, setExcelData] = useState<ExcelUploadResponse | null>(null);
@@ -331,12 +332,14 @@ export function App() {
     : 'invoice';
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900">
+    <div className={`min-h-screen bg-slate-50 flex flex-col text-slate-900 ${seniorMode ? "senior-mode text-base" : "text-sm"}`}>
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onLoadSample={handleLoadSample}
         isLoadingSample={isLoadingSample}
+        seniorMode={seniorMode}
+        onToggleSeniorMode={() => setSeniorMode(!seniorMode)}
       />
 
       <main className="flex-1 pb-16">

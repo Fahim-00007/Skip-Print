@@ -85,13 +85,21 @@ export const Step2Template: React.FC<Step2TemplateProps> = ({
               {/* Thumbnail Container */}
               <div className="h-60 bg-slate-50 flex items-center justify-center overflow-hidden border-b border-slate-100 relative p-4">
                 <img
-                  src={`http://127.0.0.1:8000/api/templates/${tpl.id}/thumbnail`}
+                  src={`/api/templates/${tpl.id}/preview-image`}
                   alt={tpl.name}
-                  className="max-h-full max-w-full object-contain shadow-xs rounded-sm border border-slate-200"
+                  loading="lazy"
+                  className="max-h-full max-w-full object-contain shadow-xs rounded-sm border border-slate-200 bg-white"
                   onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    if (e.currentTarget.nextElementSibling) {
-                      (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
+                    // Try fallback to /thumbnail if preview-image failed
+                    const target = e.currentTarget;
+                    if (!target.dataset.triedThumbnail) {
+                      target.dataset.triedThumbnail = 'true';
+                      target.src = `/api/templates/${tpl.id}/thumbnail`;
+                      return;
+                    }
+                    target.style.display = 'none';
+                    if (target.nextElementSibling) {
+                      (target.nextElementSibling as HTMLElement).style.display = 'flex';
                     }
                   }}
                 />

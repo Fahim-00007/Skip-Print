@@ -68,6 +68,7 @@ async def list_templates():
     return templates
 
 @router.get("/{template_id}/preview-image")
+@router.get("/{template_id}/thumbnail")
 async def get_template_preview_image(template_id: str):
     conn = get_db()
     cursor = conn.cursor()
@@ -85,9 +86,18 @@ async def get_template_preview_image(template_id: str):
     file_path = row["file_path"]
     if file_path and os.path.exists(file_path):
         # Generate on the fly
-        gen_preview = os.path.join(TEMPLATES_DIR, f"{template_id}_preview.png")
-        generate_preview_image(file_path, gen_preview)
-        return FileResponse(gen_preview, media_type="image/png")
+        try:
+            gen_preview = os.path.join(TEMPLATES_DIR, f"{template_id}_preview.png")
+            generate_preview_image(file_path, gen_preview)
+            # Update DB cache
+            c2 = get_db()
+            c2.execute("UPDATE templates SET preview_image_path = ? WHERE id = ?", (gen_preview, template_id))
+            c2.commit()
+            c2.close()
+            return FileResponse(gen_preview, media_type="image/png")
+        except Exception as e:
+            print(f"Error generating preview for {template_id}:", e)
+            raise HTTPException(status_code=500, detail="Failed to render preview image.")
 
     raise HTTPException(status_code=404, detail="Preview not available.")
 

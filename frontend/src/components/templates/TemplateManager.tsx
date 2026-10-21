@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Template } from '../../types';
 import { api } from '../../api/client';
-import { Plus, Sparkles, Copy, Trash2, Star, FileText, Image as ImageIcon, Sliders } from 'lucide-react';
+import { Plus, Sparkles, Copy, Trash2, Star, FileText, Image as ImageIcon, Sliders, LayoutTemplate } from 'lucide-react';
 import { TemplateUploadModal } from './TemplateUploadModal';
 import { TemplateBuilderModal } from './TemplateBuilderModal';
 
@@ -104,8 +104,25 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
               <img
                 src={`/api/templates/${tpl.id}/preview-image`}
                 alt={tpl.name}
+                loading="lazy"
                 className="max-h-full max-w-full object-contain rounded bg-white shadow-sm border border-slate-200"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (!target.dataset.triedThumbnail) {
+                    target.dataset.triedThumbnail = 'true';
+                    target.src = `/api/templates/${tpl.id}/thumbnail`;
+                    return;
+                  }
+                  target.style.display = 'none';
+                  if (target.nextElementSibling) {
+                    (target.nextElementSibling as HTMLElement).style.display = 'flex';
+                  }
+                }}
               />
+              <div className="hidden flex-col items-center justify-center text-slate-400 space-y-2">
+                <LayoutTemplate className="w-8 h-8 stroke-1" />
+                <span className="text-xs font-medium">Letterhead Preview</span>
+              </div>
 
               {tpl.is_default && (
                 <span className="absolute top-3 left-3 text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-0.5 rounded-full shadow-xs flex items-center space-x-1">

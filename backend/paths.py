@@ -62,6 +62,8 @@ for _directory in (
 
 # Bundled sample assets that are copied into the writable data folder on first run.
 _SAMPLE_FILES = (
+    "sgs_letterhead.pdf",
+    "sgs_letterhead.png",
     "sample_letterhead.pdf",
     "sample_letterhead.png",
     "sample_signature.png",

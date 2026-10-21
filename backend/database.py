@@ -1,6 +1,7 @@
 """
 Database management for BillCraft using SQLite.
 Stores templates, saved signatures, recent files, and user preferences.
+Trained on real-world Sarwar General Store (SGS) scanned bills.
 """
 import os
 import sqlite3
@@ -28,7 +29,7 @@ def init_db():
         paper_size TEXT DEFAULT 'A4', -- 'A4', 'Letter', 'Custom'
         orientation TEXT DEFAULT 'portrait', -- 'portrait', 'landscape'
         margin_top REAL DEFAULT 105.0,
-        margin_bottom REAL DEFAULT 60.0,
+        margin_bottom REAL DEFAULT 65.0,
         margin_left REAL DEFAULT 36.0,
         margin_right REAL DEFAULT 36.0,
         config_json TEXT,
@@ -77,36 +78,69 @@ def init_db():
     if cursor.fetchone()[0] == 0:
         seed_samples(cursor)
         conn.commit()
+    else:
+        # Ensure SGS official template is present and default
+        seed_sgs_template(cursor)
+        conn.commit()
 
     conn.close()
+
+def seed_sgs_template(cursor):
+    now = datetime.now().isoformat()
+    samples_dir = ensure_sample_assets()
+    pdf_lh = os.path.join(samples_dir, "sgs_letterhead.pdf")
+    if not os.path.exists(pdf_lh):
+        pdf_lh = os.path.join(samples_dir, "sample_letterhead.pdf")
+    png_lh = os.path.join(samples_dir, "sgs_letterhead.png")
+    if not os.path.exists(png_lh):
+        png_lh = os.path.join(samples_dir, "sample_letterhead.png")
+    sig_png = os.path.join(samples_dir, "sample_signature.png")
+
+    # Check if SGS template already exists
+    cursor.execute("SELECT id FROM templates WHERE id = 'sgs-official-pad'")
+    if not cursor.fetchone():
+        # Set all others to non-default
+        cursor.execute("UPDATE templates SET is_default = 0")
+        cursor.execute("""
+        INSERT INTO templates (id, name, type, file_path, paper_size, orientation, margin_top, margin_bottom, margin_left, margin_right, is_default, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, ("sgs-official-pad", "Sarwar General Store (Official Vector Pad)", "uploaded_pdf", pdf_lh, "A4", "portrait", 105.0, 65.0, 36.0, 36.0, 1, now))
+
+    cursor.execute("SELECT id FROM signatures WHERE id = 'sgs-sig-parves'")
+    if not cursor.fetchone():
+        cursor.execute("""
+        INSERT INTO signatures (id, name, file_path, created_at)
+        VALUES (?, ?, ?, ?)
+        """, ("sgs-sig-parves", "MD. Parves Hossan Rajib (Proprietor)", sig_png, now))
 
 def seed_samples(cursor):
     now = datetime.now().isoformat()
     samples_dir = ensure_sample_assets()
-    pdf_lh = os.path.join(samples_dir, "sample_letterhead.pdf")
-    png_lh = os.path.join(samples_dir, "sample_letterhead.png")
+    pdf_lh = os.path.join(samples_dir, "sgs_letterhead.pdf")
+    if not os.path.exists(pdf_lh):
+        pdf_lh = os.path.join(samples_dir, "sample_letterhead.pdf")
+    png_lh = os.path.join(samples_dir, "sgs_letterhead.png")
+    if not os.path.exists(png_lh):
+        png_lh = os.path.join(samples_dir, "sample_letterhead.png")
     sig_png = os.path.join(samples_dir, "sample_signature.png")
 
     if os.path.exists(pdf_lh):
-        t1_id = "sample-template-pdf"
         cursor.execute("""
         INSERT INTO templates (id, name, type, file_path, paper_size, orientation, margin_top, margin_bottom, margin_left, margin_right, is_default, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (t1_id, "Apex Dynamics (Vector PDF Pad)", "uploaded_pdf", pdf_lh, "A4", "portrait", 105.0, 60.0, 36.0, 36.0, 1, now))
+        """, ("sgs-official-pad", "Sarwar General Store (Official Vector Pad)", "uploaded_pdf", pdf_lh, "A4", "portrait", 105.0, 65.0, 36.0, 36.0, 1, now))
 
     if os.path.exists(png_lh):
-        t2_id = "sample-template-png"
         cursor.execute("""
         INSERT INTO templates (id, name, type, file_path, paper_size, orientation, margin_top, margin_bottom, margin_left, margin_right, is_default, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (t2_id, "Apex Dynamics (Classic Image Pad)", "uploaded_image", png_lh, "A4", "portrait", 110.0, 65.0, 40.0, 40.0, 0, now))
+        """, ("sgs-classic-image-pad", "Sarwar General Store (Image Pad)", "uploaded_image", png_lh, "A4", "portrait", 105.0, 65.0, 36.0, 36.0, 0, now))
 
     if os.path.exists(sig_png):
-        s1_id = "sample-sig-alex"
         cursor.execute("""
         INSERT INTO signatures (id, name, file_path, created_at)
         VALUES (?, ?, ?, ?)
-        """, (s1_id, "Alex Morgan (Managing Director)", sig_png, now))
+        """, ("sgs-sig-parves", "MD. Parves Hossan Rajib (Proprietor)", sig_png, now))
 
 if __name__ == "__main__":
     init_db()

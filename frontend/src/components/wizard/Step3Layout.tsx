@@ -74,7 +74,7 @@ export const Step3Layout: React.FC<Step3LayoutProps> = ({
     if (!selectedTemplate) return;
     onChangeLayout({
       margin_top: selectedTemplate.margin_top || 105.0,
-      margin_bottom: selectedTemplate.margin_bottom || 60.0,
+      margin_bottom: selectedTemplate.margin_bottom || 65.0,
       margin_left: selectedTemplate.margin_left || 36.0,
       margin_right: selectedTemplate.margin_right || 36.0,
       paper_size: (selectedTemplate.paper_size as any) || 'A4',
@@ -164,7 +164,7 @@ export const Step3Layout: React.FC<Step3LayoutProps> = ({
                 className="py-2.5 px-3 rounded-xl border border-slate-200 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold text-center transition-all shadow-2xs active:scale-[0.98] flex flex-col items-center space-y-1"
               >
                 <FileText className="w-4 h-4 text-slate-600" />
-                <span>Standard</span>
+                <span>SGS Standard Pad</span>
               </button>
 
               <button
@@ -173,7 +173,7 @@ export const Step3Layout: React.FC<Step3LayoutProps> = ({
                 className="py-2.5 px-3 rounded-xl border border-blue-200 bg-blue-50/50 hover:bg-blue-50 text-blue-900 text-xs font-semibold text-center transition-all shadow-2xs active:scale-[0.98] flex flex-col items-center space-y-1"
               >
                 <Building2 className="w-4 h-4 text-blue-700" />
-                <span>Tall Logo Room</span>
+                <span>Tall Header Space</span>
               </button>
 
               <button

@@ -78,8 +78,8 @@ export const Step4Signature: React.FC<Step4SignatureProps> = ({
     onChangeSignature({
       signature_id: sigId,
       page: 'last',
-      x: 380,
-      y: 670,
+      x: 395,
+      y: 645,
       width: 140,
       height: 60,
       opacity: 1.0,
@@ -236,10 +236,10 @@ export const Step4Signature: React.FC<Step4SignatureProps> = ({
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
-                    onClick={() => handleUpdatePlacement({ x: 380, y: 670, width: 140, height: 60 })}
+                    onClick={() => handleUpdatePlacement({ x: 395, y: 645, width: 140, height: 60 })}
                     className="py-2 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors shadow-2xs"
                   >
-                    Bottom-Right (Standard)
+                    Bottom-Right (Proprietor Signoff)
                   </button>
                   <button
                     type="button"

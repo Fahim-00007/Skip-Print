@@ -26,20 +26,30 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Keep storage directories structure, ignore runtime temp outputs
+# Keep storage directories structure, ignore runtime user data & outputs
 backend/storage/outputs/*
 !backend/storage/outputs/.gitkeep
 backend/storage/test_outputs/*
 !backend/storage/test_outputs/.gitkeep
 backend/storage/uploads/*
 !backend/storage/uploads/.gitkeep
+backend/storage/signatures/*
+!backend/storage/signatures/.gitkeep
+backend/storage/templates/*
+!backend/storage/templates/.gitkeep
+backend/storage/samples/*
+!backend/storage/samples/.gitkeep
 backend/storage/*.db
 
 *.exe
 **/scripts/bin/
 .taste-skill/
 
-# Raw mobile scans
+# Privacy: Strictly ignore raw mobile scans and physical scan documents
+[Ss]can*
+*[Ss]can*
 Scan sgs/
-backend/storage/samples/*
-!backend/storage/samples/.gitkeep
+scan sgs/
+*sgs*
+*SGS*
+!backend/samples/sgs_letterhead.*

@@ -121,18 +121,13 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Step Header */}
       <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center space-x-2">
-            <span className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs">
-              5
-            </span>
-            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-              Export Finished PDF
-            </h2>
-          </div>
-          <p className="text-sm text-slate-600 mt-1 pl-8">
-            Your bill has been digitally placed onto your company letterhead. You can download or print it now.
-          </p>
+        <div className="flex items-center space-x-3">
+          <span className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-sm">
+            5
+          </span>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+            Export Finished PDF
+          </h2>
         </div>
 
         {generationResult && (
@@ -177,7 +172,7 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
                 <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center space-x-2.5">
                   <FileCheck className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span className="text-xs font-bold text-emerald-900">
-                    {billCount} Bills will be combined sequentially into this single PDF ({totalPages} pages total)
+                    {billCount} Bills ({totalPages} Pages Total)
                   </span>
                 </div>
               ) : null}
@@ -199,31 +194,6 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
                     .pdf
                   </span>
                 </div>
-                <p className="text-xs text-slate-400">
-                  This file will be saved directly into your computer's Downloads folder.
-                </p>
-              </div>
-
-              {/* Quality Standards Summary */}
-              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/80 space-y-2.5">
-                <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  <span>Quality Guarantees:</span>
-                </h4>
-                <ul className="text-xs text-slate-600 space-y-1.5 pl-1">
-                  <li className="flex items-center space-x-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
-                    <span><strong>100% Vector Text:</strong> Sharp at any zoom level, looks printed.</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
-                    <span><strong>Selectable:</strong> Numbers and details can be highlighted and copied.</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
-                    <span><strong>Accurate Placement:</strong> Cleanly aligned with your company pad.</span>
-                  </li>
-                </ul>
               </div>
 
               {/* Primary Action Button */}
@@ -237,12 +207,12 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
                   {isGenerating ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Creating Finished PDF...</span>
+                      <span>Creating PDF...</span>
                     </>
                   ) : (
                     <>
                       <FileCheck className="w-4 h-4 text-blue-400" />
-                      <span>Create & Download PDF</span>
+                      <span>Create PDF</span>
                     </>
                   )}
                 </button>
@@ -254,7 +224,7 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
               <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-950 flex items-center space-x-3">
                 <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
                 <div>
-                  <h4 className="text-sm font-bold text-emerald-950">PDF Ready to Save!</h4>
+                  <h4 className="text-sm font-bold text-emerald-950">PDF Ready</h4>
                   <p className="text-xs text-emerald-800 mt-0.5">
                     {generationResult.filename} • {(generationResult.file_size / 1024).toFixed(1)} KB
                   </p>
@@ -268,7 +238,7 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
                 className="w-full py-3.5 px-6 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm shadow-xs transition-all flex items-center justify-center space-x-2 active:scale-[0.98]"
               >
                 <Download className="w-4 h-4" />
-                <span>Save PDF to Computer</span>
+                <span>Download PDF</span>
               </button>
 
               {/* Secondary Options */}
@@ -279,7 +249,7 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
                   className="inline-flex items-center justify-center space-x-1.5 py-2.5 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors shadow-2xs"
                 >
                   <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Open in Tab</span>
+                  <span>Open</span>
                 </button>
 
                 <button
@@ -288,7 +258,7 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
                   className="inline-flex items-center justify-center space-x-1.5 py-2.5 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors shadow-2xs"
                 >
                   <Printer className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Print Directly</span>
+                  <span>Print</span>
                 </button>
               </div>
             </div>
@@ -302,7 +272,7 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
               className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Back to Signature</span>
+              <span>Back</span>
             </button>
           </div>
         </div>

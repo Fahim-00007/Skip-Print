@@ -138,18 +138,13 @@ export const Step1Upload: React.FC<Step1UploadProps> = ({
 
       {/* Step Header Card */}
       <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center space-x-2">
-            <span className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs">
-              1
-            </span>
-            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-              Select Your Excel Bills
-            </h2>
-          </div>
-          <p className="text-sm text-slate-600 mt-1 pl-8">
-            Choose one bill or add multiple bills to combine into a single, professional PDF letterhead.
-          </p>
+        <div className="flex items-center space-x-3">
+          <span className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-sm">
+            1
+          </span>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+            Select Excel Bills
+          </h2>
         </div>
 
         <button
@@ -159,16 +154,8 @@ export const Step1Upload: React.FC<Step1UploadProps> = ({
           className="inline-flex items-center space-x-2 px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200 transition-all shadow-2xs shrink-0 active:scale-[0.98] disabled:opacity-50"
         >
           <Sparkles className="w-4 h-4 text-blue-600" />
-          <span>{isLoading ? 'Loading Sample...' : 'Try Practice Sample Bill'}</span>
+          <span>{isLoading ? 'Loading...' : 'Sample Bill'}</span>
         </button>
-      </div>
-
-      {/* Safety & Integrity Guarantee Notice */}
-      <div className="flex items-center space-x-3 px-4 py-3 bg-slate-100/70 border border-slate-200 rounded-xl text-slate-700 text-xs sm:text-sm">
-        <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-        <span>
-          <strong>Safe & Secure:</strong> Your original Excel files are never altered or overwritten. We only read the data to generate your combined letterhead PDF.
-        </span>
       </div>
 
       {/* Upload Zone (When no file is selected) */}
@@ -199,16 +186,16 @@ export const Step1Upload: React.FC<Step1UploadProps> = ({
 
             <div>
               <p className="text-base font-bold text-slate-900">
-                Click here to choose your Excel bills, or drag them into this box
+                Choose Excel File
               </p>
               <p className="text-xs text-slate-500 mt-1">
-                Select 1 bill or multiple files (.xlsx, .xls) to combine into one PDF
+                or drag files here (.xlsx, .xls)
               </p>
             </div>
 
             <div className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-xs">
               <FileSpreadsheet className="w-4 h-4" />
-              <span>Browse Files on Computer</span>
+              <span>Browse Computer</span>
             </div>
           </div>
         </div>
@@ -227,14 +214,9 @@ export const Step1Upload: React.FC<Step1UploadProps> = ({
                 <div>
                   <h3 className="text-base font-bold text-slate-900">
                     {currentBills.length === 1
-                      ? '1 Bill Selected for PDF'
-                      : `${currentBills.length} Bills in this Combined PDF`}
+                      ? '1 Bill Selected'
+                      : `${currentBills.length} Bills Selected`}
                   </h3>
-                  <p className="text-xs text-slate-500">
-                    {currentBills.length === 1
-                      ? 'You can add more bills below to combine them into a single PDF.'
-                      : 'All bills listed below will be generated sequentially in order.'}
-                  </p>
                 </div>
               </div>
             </div>
@@ -247,7 +229,7 @@ export const Step1Upload: React.FC<Step1UploadProps> = ({
                 className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition-all active:scale-[0.98]"
               >
                 <Plus className="w-4 h-4" />
-                <span>+ Add Another Bill File</span>
+                <span>+ Add Another Bill</span>
               </button>
             </div>
           </div>
@@ -422,8 +404,8 @@ export const Step1Upload: React.FC<Step1UploadProps> = ({
               )}
               <span>
                 {showGridPreview
-                  ? 'Hide Cell Data'
-                  : `Inspect & Edit Cell Values (${activeBill?.filename || 'Bill'})`}
+                  ? 'Hide Cells'
+                  : 'Edit Cells'}
               </span>
             </button>
 
@@ -433,11 +415,7 @@ export const Step1Upload: React.FC<Step1UploadProps> = ({
                 onClick={onContinue}
                 className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm shadow-xs transition-all active:scale-[0.98]"
               >
-                <span>
-                  {currentBills.length > 1
-                    ? `Continue with ${currentBills.length} Bills to Letterhead`
-                    : 'Continue to Letterhead'}
-                </span>
+                <span>Next: Letterhead</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             )}
@@ -448,10 +426,7 @@ export const Step1Upload: React.FC<Step1UploadProps> = ({
             <div className="pt-4 border-t border-slate-100">
               <div className="mb-2">
                 <p className="text-xs font-bold text-slate-800">
-                  Editing Bill #{activeBillIndex + 1}: {activeBill.filename} ({activeBill.sheet_name})
-                </p>
-                <p className="text-xs text-slate-500">
-                  Click any cell to correct typos or update numbers right now before generating the PDF.
+                  {activeBill.filename} ({activeBill.sheet_name})
                 </p>
               </div>
               <SpreadsheetGrid

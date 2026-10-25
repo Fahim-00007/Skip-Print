@@ -24,11 +24,8 @@ export const SimpleGuideModal: React.FC<SimpleGuideModalProps> = ({
               Quick Guide
             </span>
             <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-              How BillCraft Works in Simple Steps
+              Simple Guide
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Follow these simple steps to create a digital letterhead bill without printing or scanning:
-            </p>
           </div>
           <button
             type="button"
@@ -43,66 +40,57 @@ export const SimpleGuideModal: React.FC<SimpleGuideModalProps> = ({
         {/* Steps List */}
         <div className="space-y-3">
           {/* Step 1 */}
-          <div className="flex items-start space-x-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
-            <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+          <div className="flex items-start space-x-3.5 p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
               1
             </div>
-            <div className="space-y-0.5">
-              <h4 className="text-sm font-bold text-slate-900 flex items-center space-x-1.5">
-                <FileSpreadsheet className="w-4 h-4 text-slate-700" />
-                <span>Select Your Excel Bill</span>
-              </h4>
-              <p className="text-xs text-slate-600">
-                Choose your Excel file (.xlsx or .xls) from your computer. Your original spreadsheet is completely safe and never modified.
-              </p>
+            <div>
+              <h4 className="text-sm font-bold text-slate-900">Upload Excel Bill</h4>
+              <p className="text-xs text-slate-500 mt-0.5">Select one or more Excel files from your computer.</p>
             </div>
           </div>
 
           {/* Step 2 */}
-          <div className="flex items-start space-x-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
-            <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+          <div className="flex items-start space-x-3.5 p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
               2
             </div>
-            <div className="space-y-0.5">
-              <h4 className="text-sm font-bold text-slate-900 flex items-center space-x-1.5">
-                <LayoutTemplate className="w-4 h-4 text-slate-700" />
-                <span>Choose Your Company Letterhead</span>
-              </h4>
-              <p className="text-xs text-slate-600">
-                Pick your company pad design from your templates, or upload a scan/PDF of your pre-printed paper.
-              </p>
+            <div>
+              <h4 className="text-sm font-bold text-slate-900">Choose Letterhead</h4>
+              <p className="text-xs text-slate-500 mt-0.5">Pick the company letterhead design.</p>
             </div>
           </div>
 
           {/* Step 3 */}
-          <div className="flex items-start space-x-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
-            <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+          <div className="flex items-start space-x-3.5 p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
               3
             </div>
-            <div className="space-y-0.5">
-              <h4 className="text-sm font-bold text-slate-900 flex items-center space-x-1.5">
-                <Move className="w-4 h-4 text-slate-700" />
-                <span>Adjust Alignment on Page</span>
-              </h4>
-              <p className="text-xs text-slate-600">
-                Check the preview. If your logo is tall, click <strong>"Tall Logo Room"</strong> or press <strong>"Move Down"</strong> to ensure generous spacing.
-              </p>
+            <div>
+              <h4 className="text-sm font-bold text-slate-900">Position Bill</h4>
+              <p className="text-xs text-slate-500 mt-0.5">Use the arrow buttons to position the text cleanly.</p>
             </div>
           </div>
 
           {/* Step 4 */}
-          <div className="flex items-start space-x-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
-            <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+          <div className="flex items-start space-x-3.5 p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
               4
             </div>
-            <div className="space-y-0.5">
-              <h4 className="text-sm font-bold text-slate-900 flex items-center space-x-1.5">
-                <Download className="w-4 h-4 text-slate-700" />
-                <span>Download Finished PDF</span>
-              </h4>
-              <p className="text-xs text-slate-600">
-                Click <strong>"Create & Download PDF"</strong>. Your document is saved to your computer as crisp, sharp vector text ready to send.
-              </p>
+            <div>
+              <h4 className="text-sm font-bold text-slate-900">Signature & Date</h4>
+              <p className="text-xs text-slate-500 mt-0.5">Select a signature or skip if not needed.</p>
+            </div>
+          </div>
+
+          {/* Step 5 */}
+          <div className="flex items-start space-x-3.5 p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+              5
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-slate-900">Download PDF</h4>
+              <p className="text-xs text-slate-500 mt-0.5">Click Create PDF to save your completed document.</p>
             </div>
           </div>
         </div>

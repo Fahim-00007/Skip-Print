@@ -69,10 +69,7 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
       {/* View Header */}
       <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">My Letterhead Templates</h2>
-          <p className="text-sm text-slate-500 mt-1">
-            Manage your company pads, upload existing pre-printed designs, or visually build custom templates.
-          </p>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Letterheads</h2>
         </div>
         <div className="flex items-center space-x-2">
           <button

@@ -58,7 +58,6 @@ export const Header: React.FC<HeaderProps> = ({
                     Pro
                   </span>
                 </div>
-                <p className="text-xs text-slate-500">Print Excel onto Company Letterheads</p>
               </div>
             </div>
 
@@ -96,7 +95,7 @@ export const Header: React.FC<HeaderProps> = ({
                 title="Practice with a sample invoice"
               >
                 <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                <span className="hidden sm:inline">{isLoadingSample ? 'Loading...' : 'Try Sample Bill'}</span>
+                <span className="hidden sm:inline">{isLoadingSample ? 'Loading...' : 'Sample Bill'}</span>
               </button>
 
               {/* Simple Guide Dialog */}
@@ -107,7 +106,7 @@ export const Header: React.FC<HeaderProps> = ({
                 title="Easy beginner guide"
               >
                 <HelpCircle className="w-3.5 h-3.5 text-slate-500" />
-                <span className="hidden sm:inline">Simple Guide</span>
+                <span className="hidden sm:inline">Guide</span>
               </button>
 
               {/* Senior / Large Text Toggle */}
@@ -123,7 +122,7 @@ export const Header: React.FC<HeaderProps> = ({
                   title="Toggle large text reading mode"
                 >
                   <Type className="w-3.5 h-3.5 text-slate-600" />
-                  <span className="hidden lg:inline">{seniorMode ? 'Large Text: ON' : 'Normal Text'}</span>
+                  <span className="hidden lg:inline">{seniorMode ? 'Large Text' : 'Standard Text'}</span>
                 </button>
               )}
             </div>

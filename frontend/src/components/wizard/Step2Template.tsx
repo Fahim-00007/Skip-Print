@@ -34,18 +34,13 @@ export const Step2Template: React.FC<Step2TemplateProps> = ({
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Step Header */}
       <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center space-x-2">
-            <span className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs">
-              2
-            </span>
-            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-              Choose Company Letterhead
-            </h2>
-          </div>
-          <p className="text-sm text-slate-600 mt-1 pl-8">
-            Click on the letterhead design you want your bill to be printed onto.
-          </p>
+        <div className="flex items-center space-x-3">
+          <span className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-sm">
+            2
+          </span>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+            Choose Letterhead
+          </h2>
         </div>
 
         <div className="flex items-center space-x-2 shrink-0">
@@ -122,12 +117,9 @@ export const Step2Template: React.FC<Step2TemplateProps> = ({
                   <div className="flex items-center justify-between">
                     <h3 className="font-bold text-sm text-slate-900 truncate">{tpl.name}</h3>
                     <span className="text-[10px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md border border-slate-200">
-                      {tpl.paper_size} {tpl.orientation}
+                      {tpl.paper_size}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 mt-1 capitalize">
-                    {tpl.type.replace('_', ' ')} letterhead
-                  </p>
                 </div>
 
                 <button
@@ -145,10 +137,10 @@ export const Step2Template: React.FC<Step2TemplateProps> = ({
                   {isSelected ? (
                     <>
                       <Check className="w-3.5 h-3.5" />
-                      <span>Letterhead Selected</span>
+                      <span>Selected</span>
                     </>
                   ) : (
-                    <span>Select This Letterhead</span>
+                    <span>Select</span>
                   )}
                 </button>
               </div>
@@ -165,7 +157,7 @@ export const Step2Template: React.FC<Step2TemplateProps> = ({
           className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Excel Bill</span>
+          <span>Back</span>
         </button>
 
         <button
@@ -174,7 +166,7 @@ export const Step2Template: React.FC<Step2TemplateProps> = ({
           disabled={!selectedTemplateId}
           className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:opacity-40 text-white font-semibold text-sm shadow-xs transition-all active:scale-[0.98]"
         >
-          <span>Continue to Adjust Position</span>
+          <span>Next: Position</span>
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>

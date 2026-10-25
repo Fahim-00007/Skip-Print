@@ -92,7 +92,7 @@ export const TemplateBuilderModal: React.FC<TemplateBuilderModalProps> = ({
         <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between shrink-0">
           <div className="flex items-center space-x-2">
             <Sparkles className="w-5 h-5 text-blue-900" />
-            <h3 className="font-bold text-slate-900 text-base">Visual Company Pad Builder</h3>
+            <h3 className="font-bold text-slate-900 text-base">Design Letterhead</h3>
           </div>
           <button
             onClick={onClose}

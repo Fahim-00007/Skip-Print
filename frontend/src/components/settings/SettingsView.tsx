@@ -28,10 +28,7 @@ export const SettingsView: React.FC = () => {
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-xs">
-        <h2 className="text-xl font-bold text-slate-900 tracking-tight">System & Privacy Settings</h2>
-        <p className="text-sm text-slate-500 mt-1">
-          Review system processing engines, local storage details, and privacy guarantees.
-        </p>
+        <h2 className="text-xl font-bold text-slate-900 tracking-tight">Settings</h2>
       </div>
 
       {/* Engine Status Card */}

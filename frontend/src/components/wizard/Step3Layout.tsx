@@ -105,18 +105,13 @@ export const Step3Layout: React.FC<Step3LayoutProps> = ({
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Step Header */}
       <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center space-x-2">
-            <span className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs">
-              3
-            </span>
-            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-              Position Bill on Letterhead
-            </h2>
-          </div>
-          <p className="text-sm text-slate-600 mt-1 pl-8">
-            Check the live preview. Use the position controls to place the bill cleanly without covering your company logo or footer.
-          </p>
+        <div className="flex items-center space-x-3">
+          <span className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-sm">
+            3
+          </span>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+            Position Bill on Letterhead
+          </h2>
         </div>
 
         <button
@@ -194,9 +189,6 @@ export const Step3Layout: React.FC<Step3LayoutProps> = ({
                 <Move className="w-3.5 h-3.5 text-slate-600" />
                 <span>Nudge Position:</span>
               </label>
-              <span className="text-[11px] text-slate-400">
-                12pt per click
-              </span>
             </div>
 
             <div className="flex flex-col items-center space-y-2 py-2">
@@ -288,14 +280,6 @@ export const Step3Layout: React.FC<Step3LayoutProps> = ({
             </div>
           </div>
 
-          {/* Readout Pill */}
-          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-xs text-slate-600 flex items-center justify-between font-medium">
-            <span>Current Offset:</span>
-            <span className="font-mono font-bold text-slate-800">
-              X: {layout.offset_x >= 0 ? `+${layout.offset_x}` : layout.offset_x}pt • Y: {layout.offset_y >= 0 ? `+${layout.offset_y}` : layout.offset_y}pt
-            </span>
-          </div>
-
           {/* Footer Actions */}
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
             <button
@@ -312,7 +296,7 @@ export const Step3Layout: React.FC<Step3LayoutProps> = ({
               onClick={onContinue}
               className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm shadow-xs transition-all active:scale-[0.98]"
             >
-              <span>Continue to Signature</span>
+              <span>Next: Signature</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>

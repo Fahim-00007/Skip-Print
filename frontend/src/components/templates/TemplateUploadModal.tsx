@@ -66,7 +66,7 @@ export const TemplateUploadModal: React.FC<TemplateUploadModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
       <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-          <h3 className="font-bold text-slate-900 text-base">Upload Company Letterhead / Pad</h3>
+          <h3 className="font-bold text-slate-900 text-base">Upload Letterhead</h3>
           <button
             onClick={onClose}
             className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
@@ -114,9 +114,6 @@ export const TemplateUploadModal: React.FC<TemplateUploadModalProps> = ({
               }}
               className="w-full text-xs border border-slate-300 rounded-lg px-3 py-2 text-slate-800 file:mr-3 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-900 hover:file:bg-blue-100"
             />
-            <p className="text-[11px] text-slate-400 mt-1">
-              For PDFs, vector graphics and fonts are preserved. For scanned/designed images, high resolution is recommended.
-            </p>
           </div>
 
           {/* Paper Size & Orientation */}

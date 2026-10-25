@@ -180,7 +180,7 @@ export const LivePreview: React.FC<LivePreviewProps> = ({
             }`}
           >
             <FileText className="w-3.5 h-3.5 text-slate-700" />
-            <span>Document Preview</span>
+            <span>Preview</span>
           </button>
 
           {sheetData && (
@@ -194,7 +194,7 @@ export const LivePreview: React.FC<LivePreviewProps> = ({
               }`}
             >
               <Edit3 className="w-3.5 h-3.5" />
-              <span>Edit Bill Text in Table</span>
+              <span>Edit Cells</span>
             </button>
           )}
         </div>
@@ -335,7 +335,7 @@ export const LivePreview: React.FC<LivePreviewProps> = ({
                   {/* Floating badge */}
                   <div className="absolute -top-6 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-emerald-800 text-white text-[10px] font-bold shadow-xs flex items-center space-x-1 pointer-events-none whitespace-nowrap">
                     <Move className="w-3 h-3" />
-                    <span>Your Signature (Drag to move)</span>
+                    <span>Drag to move</span>
                   </div>
                   {/* Resize handle */}
                   <div
@@ -366,16 +366,6 @@ export const LivePreview: React.FC<LivePreviewProps> = ({
               isSavingEdits={isSavingCellEdits}
             />
           )}
-        </div>
-      )}
-
-      {/* Signature Placement Bottom Hint */}
-      {viewMode === 'preview' && isSignatureMode && signature && (
-        <div className="px-4 py-2.5 bg-emerald-50 border-t border-emerald-200 text-xs text-emerald-950 flex items-center justify-between font-medium">
-          <span className="flex items-center space-x-1.5">
-            <span className="font-bold">Signature Placement:</span>
-            <span>You can drag the signature directly on the paper above, or use the quick placement buttons on the right.</span>
-          </span>
         </div>
       )}
     </div>

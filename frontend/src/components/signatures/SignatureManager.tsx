@@ -50,10 +50,7 @@ export const SignatureManager: React.FC<SignatureManagerProps> = ({
       {/* View Header */}
       <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Saved Signatures Library</h2>
-          <p className="text-sm text-slate-500 mt-1">
-            Upload transparent PNG signatures to reuse them quickly on any bill without re-uploading every time.
-          </p>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Signatures</h2>
         </div>
         <div>
           <input

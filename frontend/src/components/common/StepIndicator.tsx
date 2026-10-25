@@ -13,11 +13,11 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({
   canNavigateTo
 }) => {
   const steps = [
-    { number: 1, title: 'Upload Bill', desc: 'Select Excel file', icon: Upload },
-    { number: 2, title: 'Letterhead', desc: 'Pick company pad', icon: LayoutTemplate },
-    { number: 3, title: 'Adjust Position', desc: 'Align on page', icon: Move },
-    { number: 4, title: 'Signature', desc: 'Optional signoff', icon: PenTool },
-    { number: 5, title: 'Download PDF', desc: 'Save finished file', icon: Download },
+    { number: 1, title: 'Upload Bill', icon: Upload },
+    { number: 2, title: 'Letterhead', icon: LayoutTemplate },
+    { number: 3, title: 'Position', icon: Move },
+    { number: 4, title: 'Signature', icon: PenTool },
+    { number: 5, title: 'Download', icon: Download },
   ];
 
   return (
@@ -61,9 +61,6 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({
                       }`}
                     >
                       {step.title}
-                    </p>
-                    <p className="text-[11px] text-slate-400 leading-tight mt-0.5">
-                      {step.desc}
                     </p>
                   </div>
                 </button>

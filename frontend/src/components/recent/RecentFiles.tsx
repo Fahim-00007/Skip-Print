@@ -27,10 +27,7 @@ export const RecentFiles: React.FC<RecentFilesProps> = ({
       {/* Header */}
       <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Recent Generated Bills</h2>
-          <p className="text-sm text-slate-500 mt-1">
-            Access, download, or re-open your previously generated professional PDFs.
-          </p>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Saved Bills</h2>
         </div>
       </div>
 

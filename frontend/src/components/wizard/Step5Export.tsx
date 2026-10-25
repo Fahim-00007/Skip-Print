@@ -21,6 +21,7 @@ interface Step5ExportProps {
   onPageChange: (page: number) => void;
   engineName?: string;
   warning?: string;
+  billCount?: number;
 
   // Sheet data editing
   sheetData?: SheetPreviewData | null;
@@ -59,6 +60,7 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
   onPageChange,
   engineName,
   warning,
+  billCount,
   sheetData,
   sheetNames,
   activeSheet,
@@ -170,6 +172,16 @@ export const Step5Export: React.FC<Step5ExportProps> = ({
         <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs space-y-6">
           {!generationResult ? (
             <>
+              {/* Multi-bill Combined Status Badge */}
+              {billCount && billCount > 1 ? (
+                <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center space-x-2.5">
+                  <FileCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span className="text-xs font-bold text-emerald-900">
+                    {billCount} Bills will be combined sequentially into this single PDF ({totalPages} pages total)
+                  </span>
+                </div>
+              ) : null}
+
               {/* Output Filename */}
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-800 uppercase tracking-wider block">

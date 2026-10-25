@@ -158,6 +158,8 @@ export const LivePreview: React.FC<LivePreviewProps> = ({
 
   const showSigOverlay = isSignatureMode && signature && signatureObj && (
     signature.page === 'all' ||
+    signature.page === 'each_bill' ||
+    signature.page === 'each' ||
     signature.page === String(currentPage) ||
     (signature.page === 'last' && currentPage === totalPages)
   );

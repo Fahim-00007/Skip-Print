@@ -173,7 +173,8 @@ export const api = {
     layout: LayoutSettings,
     signature: SignaturePlacement | null,
     annotations: TextAnnotation[] = [],
-    previewPage: number = 1
+    previewPage: number = 1,
+    bills?: { excel_file_id: string; sheet_name?: string; title?: string }[]
   ): Promise<{
     success: boolean;
     total_pages: number;
@@ -188,6 +189,7 @@ export const api = {
       body: JSON.stringify({
         excel_file_id: excelFileId,
         sheet_name: sheetName,
+        bills: bills && bills.length > 0 ? bills : undefined,
         template_id: templateId,
         layout,
         signature: signature ? {
@@ -218,7 +220,8 @@ export const api = {
     layout: LayoutSettings,
     signature: SignaturePlacement | null,
     annotations: TextAnnotation[] = [],
-    customFilename?: string
+    customFilename?: string,
+    bills?: { excel_file_id: string; sheet_name?: string; title?: string }[]
   ): Promise<{
     id: string;
     filename: string;
@@ -233,6 +236,7 @@ export const api = {
       body: JSON.stringify({
         excel_file_id: excelFileId,
         sheet_name: sheetName,
+        bills: bills && bills.length > 0 ? bills : undefined,
         template_id: templateId,
         layout,
         signature: signature ? {

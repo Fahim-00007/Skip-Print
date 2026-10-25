@@ -256,22 +256,34 @@ export const Step4Signature: React.FC<Step4SignatureProps> = ({
                 <label className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
                   Apply Signature To:
                 </label>
-                <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl border border-slate-200/80">
+                <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200/80">
+                  <button
+                    type="button"
+                    onClick={() => handleUpdatePlacement({ page: 'each_bill' })}
+                    title="Automatically signs the bottom of each bill"
+                    className={`py-1.5 px-2 rounded-lg text-xs font-semibold transition-all text-center ${
+                      signaturePlacement.page === 'each_bill' || signaturePlacement.page === 'each'
+                        ? 'bg-white text-slate-900 shadow-xs font-bold'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    Every Bill
+                  </button>
                   <button
                     type="button"
                     onClick={() => handleUpdatePlacement({ page: 'last' })}
-                    className={`py-1.5 px-3 rounded-lg text-xs font-semibold transition-all ${
+                    className={`py-1.5 px-2 rounded-lg text-xs font-semibold transition-all text-center ${
                       signaturePlacement.page === 'last'
                         ? 'bg-white text-slate-900 shadow-xs font-bold'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    Last Page Only
+                    Last Page
                   </button>
                   <button
                     type="button"
                     onClick={() => handleUpdatePlacement({ page: 'all' })}
-                    className={`py-1.5 px-3 rounded-lg text-xs font-semibold transition-all ${
+                    className={`py-1.5 px-2 rounded-lg text-xs font-semibold transition-all text-center ${
                       signaturePlacement.page === 'all'
                         ? 'bg-white text-slate-900 shadow-xs font-bold'
                         : 'text-slate-600 hover:text-slate-900'

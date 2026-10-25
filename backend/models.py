@@ -41,7 +41,7 @@ class LayoutSettings(BaseModel):
 
 class SignatureSettings(BaseModel):
     signature_id: Optional[str] = None
-    page: str = "last" # 'all', 'last', or '1', '2'...
+    page: str = "last" # 'all', 'last', 'each_bill', or '1', '2'...
     x: float = 380.0
     y: float = 680.0
     width: float = 140.0
@@ -49,9 +49,15 @@ class SignatureSettings(BaseModel):
     opacity: float = 1.0
     rotation: int = 0
 
-class RenderPreviewRequest(BaseModel):
+class BillItem(BaseModel):
     excel_file_id: str
     sheet_name: Optional[str] = None
+    title: Optional[str] = None
+
+class RenderPreviewRequest(BaseModel):
+    excel_file_id: Optional[str] = None
+    sheet_name: Optional[str] = None
+    bills: Optional[List[BillItem]] = None
     template_id: Optional[str] = None
     layout: LayoutSettings = Field(default_factory=LayoutSettings)
     signature: Optional[SignatureSettings] = None
@@ -59,8 +65,9 @@ class RenderPreviewRequest(BaseModel):
     preview_page: int = 1
 
 class RenderGenerateRequest(BaseModel):
-    excel_file_id: str
+    excel_file_id: Optional[str] = None
     sheet_name: Optional[str] = None
+    bills: Optional[List[BillItem]] = None
     template_id: Optional[str] = None
     layout: LayoutSettings = Field(default_factory=LayoutSettings)
     signature: Optional[SignatureSettings] = None

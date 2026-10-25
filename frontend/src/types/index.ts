@@ -33,6 +33,16 @@ export interface ExcelUploadResponse {
   preview_grid: SheetPreviewData;
 }
 
+export interface BillItem {
+  id: string; // unique key for UI list
+  file_id: string;
+  filename: string;
+  sheet_name: string;
+  sheet_names: string[];
+  file_size: number;
+  preview_grid?: SheetPreviewData;
+}
+
 export interface Template {
   id: string;
   name: string;

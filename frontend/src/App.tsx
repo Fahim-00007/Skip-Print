@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { api } from './api/client';
 import {
   ExcelUploadResponse,
+  BillItem,
   Template,
   Signature,
   LayoutSettings,
@@ -39,6 +40,8 @@ export function App() {
   const [seniorMode, setSeniorMode] = useState<boolean>(true);
 
   // Core Data
+  const [bills, setBills] = useState<BillItem[]>([]);
+  const [activeBillIndex, setActiveBillIndex] = useState<number>(0);
   const [excelData, setExcelData] = useState<ExcelUploadResponse | null>(null);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
@@ -116,7 +119,7 @@ export function App() {
   const previewDebounceRef = useRef<any>(null);
 
   useEffect(() => {
-    if (!excelData || !selectedTemplateId || wizardStep < 3) {
+    if ((bills.length === 0 && !excelData) || !selectedTemplateId || wizardStep < 3) {
       return;
     }
 
@@ -127,14 +130,26 @@ export function App() {
     setIsLoadingPreview(true);
     previewDebounceRef.current = setTimeout(async () => {
       try {
+        const billsPayload = bills.length > 0
+          ? bills.map((b) => ({
+              excel_file_id: b.file_id,
+              sheet_name: b.sheet_name,
+              title: `${b.filename} (${b.sheet_name})`
+            }))
+          : undefined;
+
+        const primaryFileId = bills[0]?.file_id || excelData?.file_id!;
+        const primarySheet = bills[0]?.sheet_name || excelData?.active_sheet!;
+
         const res = await api.renderPreview(
-          excelData.file_id,
-          excelData.active_sheet,
+          primaryFileId,
+          primarySheet,
           selectedTemplateId,
           layout,
           signaturePlacement,
           annotations,
-          previewPage
+          previewPage,
+          billsPayload
         );
         setPreviewUrl(res.preview_data_url);
         setTotalPages(res.total_pages);
@@ -153,6 +168,7 @@ export function App() {
       }
     };
   }, [
+    bills,
     excelData?.file_id,
     excelData?.active_sheet,
     selectedTemplateId,
@@ -164,14 +180,173 @@ export function App() {
     renderCounter
   ]);
 
-  // Handlers
-  const handleFileUpload = async (file: File) => {
+  // Handlers for Bills
+  const handleAddFiles = async (files: FileList | File[]) => {
+    const fileArray = Array.from(files);
+    if (fileArray.length === 0) return;
+
+    setIsLoadingPreview(true);
     try {
-      const res = await api.uploadExcel(file);
-      setExcelData(res);
+      const newBillItems: BillItem[] = [];
+      let firstUploadRes: ExcelUploadResponse | null = null;
+
+      for (const file of fileArray) {
+        const res = await api.uploadExcel(file);
+        if (!firstUploadRes) firstUploadRes = res;
+
+        newBillItems.push({
+          id: `bill-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+          file_id: res.file_id,
+          filename: res.filename,
+          sheet_name: res.active_sheet,
+          sheet_names: res.sheet_names,
+          file_size: res.file_size,
+          preview_grid: res.preview_grid
+        });
+      }
+
+      setBills((prev) => {
+        const updated = [...prev, ...newBillItems];
+        if (prev.length === 0 && updated.length > 0 && firstUploadRes) {
+          setExcelData(firstUploadRes);
+          setActiveBillIndex(0);
+        }
+        return updated;
+      });
       setPreviewPage(1);
+      setRenderCounter((c) => c + 1);
     } catch (err: any) {
-      alert(`Error uploading file: ${err.message}`);
+      alert(`Error uploading file(s): ${err.message}`);
+    } finally {
+      setIsLoadingPreview(false);
+    }
+  };
+
+  const handleFileUpload = async (file: File) => {
+    await handleAddFiles([file]);
+  };
+
+  const handleAddAllSheetsAsBills = (billIndex: number) => {
+    const baseBill = bills[billIndex] || bills[0];
+    if (!baseBill || !baseBill.sheet_names || baseBill.sheet_names.length <= 1) return;
+
+    const currentSheetsInQueue = new Set(
+      bills.filter((b) => b.file_id === baseBill.file_id).map((b) => b.sheet_name)
+    );
+
+    const newItems: BillItem[] = [];
+    for (const sName of baseBill.sheet_names) {
+      if (!currentSheetsInQueue.has(sName)) {
+        newItems.push({
+          id: `bill-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+          file_id: baseBill.file_id,
+          filename: baseBill.filename,
+          sheet_name: sName,
+          sheet_names: baseBill.sheet_names,
+          file_size: baseBill.file_size,
+          preview_grid: undefined
+        });
+      }
+    }
+
+    if (newItems.length > 0) {
+      setBills((prev) => [...prev, ...newItems]);
+      setRenderCounter((c) => c + 1);
+    }
+  };
+
+  const handleRemoveBill = (index: number) => {
+    setBills((prev) => {
+      const updated = prev.filter((_, i) => i !== index);
+      if (updated.length === 0) {
+        setExcelData(null);
+        setActiveBillIndex(0);
+      } else {
+        const nextIdx = Math.min(activeBillIndex, updated.length - 1);
+        setActiveBillIndex(nextIdx);
+        const cur = updated[nextIdx];
+        setExcelData({
+          file_id: cur.file_id,
+          filename: cur.filename,
+          file_path: '',
+          file_size: cur.file_size,
+          sheet_names: cur.sheet_names,
+          active_sheet: cur.sheet_name,
+          sheet_count: cur.sheet_names.length,
+          preview_grid: cur.preview_grid!
+        });
+      }
+      return updated;
+    });
+    setRenderCounter((c) => c + 1);
+  };
+
+  const handleMoveBill = (index: number, direction: 'up' | 'down') => {
+    const targetIdx = direction === 'up' ? index - 1 : index + 1;
+    if (targetIdx < 0 || targetIdx >= bills.length) return;
+
+    setBills((prev) => {
+      const copy = [...prev];
+      const temp = copy[index];
+      copy[index] = copy[targetIdx];
+      copy[targetIdx] = temp;
+      return copy;
+    });
+    if (activeBillIndex === index) {
+      setActiveBillIndex(targetIdx);
+    } else if (activeBillIndex === targetIdx) {
+      setActiveBillIndex(index);
+    }
+    setRenderCounter((c) => c + 1);
+  };
+
+  const handleChangeBillSheet = async (index: number, newSheet: string) => {
+    const bill = bills[index];
+    if (!bill) return;
+
+    try {
+      const previewGrid = await api.getSheetPreview(bill.file_id, newSheet);
+      setBills((prev) => {
+        const copy = [...prev];
+        copy[index] = {
+          ...copy[index],
+          sheet_name: newSheet,
+          preview_grid: previewGrid
+        };
+        return copy;
+      });
+
+      if (activeBillIndex === index) {
+        setExcelData((prev) =>
+          prev
+            ? {
+                ...prev,
+                active_sheet: newSheet,
+                preview_grid: previewGrid
+              }
+            : null
+        );
+      }
+      setRenderCounter((c) => c + 1);
+    } catch (err: any) {
+      alert(`Error loading worksheet: ${err.message}`);
+    }
+  };
+
+  const handleSelectBillIndex = (index: number) => {
+    setActiveBillIndex(index);
+    const cur = bills[index];
+    if (cur) {
+      setExcelData({
+        file_id: cur.file_id,
+        filename: cur.filename,
+        file_path: '',
+        file_size: cur.file_size,
+        sheet_names: cur.sheet_names,
+        active_sheet: cur.sheet_name,
+        sheet_count: cur.sheet_names.length,
+        preview_grid: cur.preview_grid!
+      });
     }
   };
 
@@ -179,7 +354,18 @@ export function App() {
     setIsLoadingSample(true);
     try {
       const res = await api.loadSampleInvoice();
+      const sampleItem: BillItem = {
+        id: `bill-sample-${Date.now()}`,
+        file_id: res.file_id,
+        filename: res.filename,
+        sheet_name: res.active_sheet,
+        sheet_names: res.sheet_names,
+        file_size: res.file_size,
+        preview_grid: res.preview_grid
+      };
+      setBills([sampleItem]);
       setExcelData(res);
+      setActiveBillIndex(0);
       setPreviewPage(1);
       setActiveTab('wizard');
       if (!selectedTemplateId && templates.length > 0) {
@@ -194,6 +380,10 @@ export function App() {
   };
 
   const handleSelectSheet = async (sheetName: string) => {
+    if (bills.length > 0) {
+      await handleChangeBillSheet(activeBillIndex, sheetName);
+      return;
+    }
     if (!excelData) return;
     try {
       const previewGrid = await api.getSheetPreview(excelData.file_id, sheetName);
@@ -210,15 +400,21 @@ export function App() {
 
   // Live Cell Editing handler
   const handleSaveCellEdits = async (updates: { coordinate: string; value: string }[]) => {
-    if (!excelData) return;
+    const curBill = bills[activeBillIndex] || (excelData ? { file_id: excelData.file_id, sheet_name: excelData.active_sheet } : null);
+    if (!curBill) return;
+
     setIsSavingCellEdits(true);
     try {
-      const res = await api.updateCells(excelData.file_id, excelData.active_sheet, updates);
-      setExcelData({
-        ...excelData,
-        preview_grid: res.preview_grid
-      });
-      // Force trigger preview re-render with updated workbook
+      const res = await api.updateCells(curBill.file_id, curBill.sheet_name, updates);
+      setBills((prev) =>
+        prev.map((b, i) => (i === activeBillIndex ? { ...b, preview_grid: res.preview_grid } : b))
+      );
+      if (excelData) {
+        setExcelData({
+          ...excelData,
+          preview_grid: res.preview_grid
+        });
+      }
       setRenderCounter((c) => c + 1);
     } catch (err: any) {
       alert(`Failed to save edits: ${err.message}`);
@@ -302,17 +498,30 @@ export function App() {
   };
 
   const handleGeneratePdf = async (customFilename: string) => {
-    if (!excelData || !selectedTemplateId) {
-      throw new Error('Missing file or template selection.');
+    if ((bills.length === 0 && !excelData) || !selectedTemplateId) {
+      throw new Error('Missing bill or template selection.');
     }
+
+    const billsPayload = bills.length > 0
+      ? bills.map((b) => ({
+          excel_file_id: b.file_id,
+          sheet_name: b.sheet_name,
+          title: `${b.filename} (${b.sheet_name})`
+        }))
+      : undefined;
+
+    const primaryFileId = bills[0]?.file_id || excelData?.file_id!;
+    const primarySheet = bills[0]?.sheet_name || excelData?.active_sheet!;
+
     const res = await api.generateFinalPdf(
-      excelData.file_id,
-      excelData.active_sheet,
+      primaryFileId,
+      primarySheet,
       selectedTemplateId,
       layout,
       signaturePlacement,
       annotations,
-      customFilename
+      customFilename,
+      billsPayload
     );
     api.getRecentFiles().then(setRecentFiles).catch(console.error);
     return res;
@@ -320,16 +529,21 @@ export function App() {
 
   const canNavigateToStep = (stepNum: number) => {
     if (stepNum === 1) return true;
-    if (stepNum === 2) return !!excelData;
-    if (stepNum >= 3) return !!excelData && !!selectedTemplateId;
+    if (stepNum === 2) return bills.length > 0 || !!excelData;
+    if (stepNum >= 3) return (bills.length > 0 || !!excelData) && !!selectedTemplateId;
     return false;
   };
 
   const selectedTemplate = templates.find((t) => t.id === selectedTemplateId) || null;
 
-  const defaultFilename = excelData
-    ? excelData.filename.replace(/\.[^/.]+$/, '')
-    : 'invoice';
+  const defaultFilename =
+    bills.length > 1
+      ? `Combined_${bills.length}_Bills`
+      : excelData
+      ? excelData.filename.replace(/\.[^/.]+$/, '')
+      : bills[0]
+      ? bills[0].filename.replace(/\.[^/.]+$/, '')
+      : 'invoice';
 
   return (
     <div className={`min-h-screen bg-slate-50 flex flex-col text-slate-900 ${seniorMode ? "senior-mode text-base" : "text-sm"}`}>
@@ -354,6 +568,14 @@ export function App() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
               {wizardStep === 1 && (
                 <Step1Upload
+                  bills={bills}
+                  activeBillIndex={activeBillIndex}
+                  onSelectBillIndex={handleSelectBillIndex}
+                  onAddFiles={handleAddFiles}
+                  onAddAllSheetsAsBills={handleAddAllSheetsAsBills}
+                  onRemoveBill={handleRemoveBill}
+                  onMoveBill={handleMoveBill}
+                  onChangeBillSheet={handleChangeBillSheet}
                   excelData={excelData}
                   isLoading={isLoadingSample}
                   onFileUpload={handleFileUpload}
@@ -434,6 +656,7 @@ export function App() {
                   onPageChange={setPreviewPage}
                   engineName={engineName}
                   warning={previewWarning}
+                  billCount={bills.length}
                   annotations={annotations}
                   onAddAnnotation={handleAddAnnotation}
                   onUpdateAnnotation={handleUpdateAnnotation}
@@ -450,9 +673,12 @@ export function App() {
                   onBack={() => setWizardStep(4)}
                   onReset={() => {
                     setWizardStep(1);
+                    setBills([]);
+                    setActiveBillIndex(0);
                     setExcelData(null);
                     setSignaturePlacement(null);
                     setAnnotations([]);
+                    setPreviewUrl(null);
                   }}
                 />
               )}

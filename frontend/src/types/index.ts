@@ -99,6 +99,8 @@ export interface SignaturePlacement {
   height: number;
   opacity: number;
   rotation: number;
+  include_date?: boolean;
+  date_text?: string;
 }
 
 export interface TextAnnotation {

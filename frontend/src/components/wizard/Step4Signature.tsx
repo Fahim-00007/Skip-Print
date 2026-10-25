@@ -12,7 +12,8 @@ import {
   CheckCircle2,
   ZoomIn,
   ZoomOut,
-  Sliders
+  Sliders,
+  Calendar
 } from 'lucide-react';
 
 interface Step4SignatureProps {
@@ -73,6 +74,17 @@ export const Step4Signature: React.FC<Step4SignatureProps> = ({
 
   const activeSig = signatures.find((s) => s.id === signaturePlacement?.signature_id);
 
+  const getTodayFormatted = (fmt = 'dots') => {
+    const now = new Date();
+    const dd = String(now.getDate()).padStart(2, '0');
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const yyyy = now.getFullYear();
+    if (fmt === 'slashes') return `${dd}/${mm}/${yyyy}`;
+    if (fmt === 'date_dots') return `Date: ${dd}.${mm}.${yyyy}`;
+    if (fmt === 'date_slashes') return `Date: ${dd}/${mm}/${yyyy}`;
+    return `${dd}.${mm}.${yyyy}`;
+  };
+
   const handleSelectSignature = (sigId: string) => {
     if (signaturePlacement?.signature_id === sigId) return;
     onChangeSignature({
@@ -81,9 +93,11 @@ export const Step4Signature: React.FC<Step4SignatureProps> = ({
       x: 395,
       y: 645,
       width: 140,
-      height: 60,
+      height: 65,
       opacity: 1.0,
-      rotation: 0
+      rotation: 0,
+      include_date: true,
+      date_text: getTodayFormatted('dots')
     });
   };
 
@@ -292,6 +306,92 @@ export const Step4Signature: React.FC<Step4SignatureProps> = ({
                     All Pages
                   </button>
                 </div>
+              </div>
+
+              {/* Handwritten Date with Signature Section */}
+              <div className="space-y-3 pt-3 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-blue-700" />
+                    <span>Handwritten Date:</span>
+                  </label>
+                  <label className="inline-flex items-center cursor-pointer space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={signaturePlacement.include_date ?? true}
+                      onChange={(e) =>
+                        handleUpdatePlacement({
+                          include_date: e.target.checked,
+                          date_text: signaturePlacement.date_text || getTodayFormatted('dots')
+                        })
+                      }
+                      className="w-4 h-4 text-slate-900 rounded border-slate-300 focus:ring-slate-900 cursor-pointer"
+                    />
+                    <span className="text-xs font-bold text-slate-700">Write Date with Signature</span>
+                  </label>
+                </div>
+
+                {(signaturePlacement.include_date ?? true) && (
+                  <div className="bg-slate-50/80 rounded-xl p-3.5 border border-slate-200 space-y-3">
+                    <div>
+                      <span className="text-[11px] font-bold text-slate-600 block mb-1">Date Text to Write:</span>
+                      <input
+                        type="text"
+                        value={signaturePlacement.date_text || ''}
+                        onChange={(e) => handleUpdatePlacement({ date_text: e.target.value })}
+                        placeholder="e.g. 26.10.2026 or Date: 26/10/2026"
+                        className="w-full text-xs font-bold px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 shadow-2xs"
+                      />
+                    </div>
+
+                    {/* Quick Date Format Buttons */}
+                    <div>
+                      <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-1.5">
+                        Quick 1-Click Formats:
+                      </span>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {[
+                          { label: getTodayFormatted('dots'), val: getTodayFormatted('dots') },
+                          { label: getTodayFormatted('slashes'), val: getTodayFormatted('slashes') },
+                          { label: getTodayFormatted('date_dots'), val: getTodayFormatted('date_dots') },
+                          { label: getTodayFormatted('date_slashes'), val: getTodayFormatted('date_slashes') }
+                        ].map((fmt) => (
+                          <button
+                            key={fmt.val}
+                            type="button"
+                            onClick={() => handleUpdatePlacement({ date_text: fmt.val })}
+                            className={`py-1.5 px-2 rounded-lg text-xs font-semibold border transition-all text-center ${
+                              signaturePlacement.date_text === fmt.val
+                                ? 'bg-slate-900 text-white border-slate-900 shadow-2xs'
+                                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200 shadow-2xs'
+                            }`}
+                          >
+                            {fmt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Handwriting Preview Card */}
+                    <div className="p-2.5 bg-white rounded-lg border border-slate-200 text-center space-y-1">
+                      <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">
+                        Handwriting Ink Preview
+                      </span>
+                      <div className="flex flex-col items-center justify-center py-1">
+                        {activeSig && (
+                          <img
+                            src={activeSig.url}
+                            alt="Signature preview"
+                            className="h-10 object-contain"
+                          />
+                        )}
+                        <span className="font-handwriting text-[#14235A] font-bold text-sm select-none tracking-wide mt-0.5">
+                          {signaturePlacement.date_text || getTodayFormatted('dots')}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}

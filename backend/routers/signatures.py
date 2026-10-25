@@ -6,10 +6,11 @@ import os
 import shutil
 import uuid
 from datetime import datetime
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Query
 from fastapi.responses import FileResponse
 from backend.database import get_db
 from backend.paths import SIGNATURES_DIR
+from backend.services.signature_styler import get_dated_signature_path
 
 router = APIRouter(prefix="/api/signatures", tags=["Signatures"])
 
@@ -67,7 +68,7 @@ async def upload_signature(
     }
 
 @router.get("/{sig_id}/image")
-async def get_signature_image(sig_id: str):
+async def get_signature_image(sig_id: str, date: str = Query(None)):
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("SELECT file_path FROM signatures WHERE id = ?", (sig_id,))
@@ -77,7 +78,11 @@ async def get_signature_image(sig_id: str):
     if not row or not os.path.exists(row["file_path"]):
         raise HTTPException(status_code=404, detail="Signature image not found.")
 
-    return FileResponse(row["file_path"], media_type="image/png")
+    file_path = row["file_path"]
+    if date and date.strip():
+        file_path = get_dated_signature_path(file_path, date.strip())
+
+    return FileResponse(file_path, media_type="image/png")
 
 @router.delete("/{sig_id}")
 async def delete_signature(sig_id: str):

@@ -482,15 +482,23 @@ export function App() {
     try {
       const newSig = await api.uploadSignature(file, name);
       setSignatures((prev) => [newSig, ...prev]);
+      const now = new Date();
+      const dd = String(now.getDate()).padStart(2, '0');
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const yyyy = now.getFullYear();
+      const defaultDate = `${dd}.${mm}.${yyyy}`;
+
       setSignaturePlacement({
         signature_id: newSig.id,
         page: 'last',
         x: 390,
         y: 645,
         width: 140,
-        height: 60,
+        height: 65,
         opacity: 1.0,
-        rotation: 0
+        rotation: 0,
+        include_date: true,
+        date_text: defaultDate
       });
     } catch (err: any) {
       alert(`Error uploading signature: ${err.message}`);

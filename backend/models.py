@@ -48,6 +48,8 @@ class SignatureSettings(BaseModel):
     height: float = 60.0
     opacity: float = 1.0
     rotation: int = 0
+    include_date: bool = False
+    date_text: Optional[str] = None
 
 class BillItem(BaseModel):
     excel_file_id: str

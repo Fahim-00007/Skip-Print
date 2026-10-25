@@ -305,11 +305,33 @@ export const LivePreview: React.FC<LivePreviewProps> = ({
                   className="absolute cursor-move border-2 border-dashed border-emerald-600 rounded bg-emerald-50/30 group select-none transition-shadow z-25 hover:border-emerald-700 shadow-sm"
                   title="Click and drag to position your signature"
                 >
-                  <img
-                    src={signatureObj.url}
-                    alt="Signature"
-                    className="w-full h-full object-contain pointer-events-none"
-                  />
+                  {signature.include_date && signature.date_text ? (
+                    <div className="w-full h-full flex flex-col items-center justify-between pointer-events-none p-1">
+                      <img
+                        src={signatureObj.url}
+                        alt="Signature"
+                        className="w-full flex-1 object-contain pointer-events-none min-h-0"
+                      />
+                      <div className="w-full text-right pr-2">
+                        <span
+                          className="font-handwriting font-bold select-none whitespace-nowrap block"
+                          style={{
+                            color: '#14235a',
+                            fontSize: `${Math.max(10, Math.min(18, signature.height * 0.22))}px`,
+                            lineHeight: 1
+                          }}
+                        >
+                          {signature.date_text}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src={signatureObj.url}
+                      alt="Signature"
+                      className="w-full h-full object-contain pointer-events-none"
+                    />
+                  )}
                   {/* Floating badge */}
                   <div className="absolute -top-6 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-emerald-800 text-white text-[10px] font-bold shadow-xs flex items-center space-x-1 pointer-events-none whitespace-nowrap">
                     <Move className="w-3 h-3" />

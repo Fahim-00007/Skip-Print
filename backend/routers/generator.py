@@ -12,6 +12,7 @@ from backend.database import get_db
 from backend.models import RenderPreviewRequest, RenderGenerateRequest, BillItem
 from backend.services.excel_converter import convert_excel_to_pdf
 from backend.services.pdf_composer import compose_document, render_page_preview_data_url
+from backend.services.signature_styler import get_dated_signature_path
 from backend.paths import OUTPUTS_DIR, SAMPLES_DIR, UPLOADS_DIR
 
 router = APIRouter(prefix="/api/render", tags=["Generator"])
@@ -110,19 +111,27 @@ async def generate_preview(req: RenderPreviewRequest):
     sig_coords = None
     sig_page = "last"
     if req.signature and req.signature.signature_id:
-        sig_path = get_signature_file(req.signature.signature_id)
+        raw_sig_path = get_signature_file(req.signature.signature_id)
+        if raw_sig_path and req.signature.include_date and req.signature.date_text:
+            sig_path = get_dated_signature_path(raw_sig_path, req.signature.date_text)
+        else:
+            sig_path = raw_sig_path
+
         sig_coords = {
             "x": req.signature.x,
             "y": req.signature.y,
             "width": req.signature.width,
             "height": req.signature.height,
             "opacity": req.signature.opacity,
-            "rotation": req.signature.rotation
+            "rotation": req.signature.rotation,
+            "include_date": req.signature.include_date,
+            "date_text": req.signature.date_text
         }
         sig_page = req.signature.page
 
-    # 4. Compose temporary preview PDF (with hash of items to ensure distinct caching)
-    cache_tag = "_".join(f"{b.excel_file_id[:8]}_{b.sheet_name or 'act'}" for b in items)
+    # 4. Compose temporary preview PDF (with hash of items & signature to ensure distinct caching)
+    sig_tag = f"{req.signature.signature_id}_{req.signature.include_date}_{req.signature.date_text}" if req.signature else ""
+    cache_tag = "_".join(f"{b.excel_file_id[:6]}_{b.sheet_name or 'act'}" for b in items) + f"_{sig_tag[:30]}"
     preview_pdf_name = f"preview_{cache_tag[:60]}.pdf"
     preview_pdf_path = os.path.join(OUTPUTS_DIR, preview_pdf_name)
 
@@ -174,14 +183,21 @@ async def generate_final_pdf(req: RenderGenerateRequest):
     sig_coords = None
     sig_page = "last"
     if req.signature and req.signature.signature_id:
-        sig_path = get_signature_file(req.signature.signature_id)
+        raw_sig_path = get_signature_file(req.signature.signature_id)
+        if raw_sig_path and req.signature.include_date and req.signature.date_text:
+            sig_path = get_dated_signature_path(raw_sig_path, req.signature.date_text)
+        else:
+            sig_path = raw_sig_path
+
         sig_coords = {
             "x": req.signature.x,
             "y": req.signature.y,
             "width": req.signature.width,
             "height": req.signature.height,
             "opacity": req.signature.opacity,
-            "rotation": req.signature.rotation
+            "rotation": req.signature.rotation,
+            "include_date": req.signature.include_date,
+            "date_text": req.signature.date_text
         }
         sig_page = req.signature.page
 

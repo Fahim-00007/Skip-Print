@@ -200,7 +200,9 @@ export const api = {
           width: signature.width,
           height: signature.height,
           opacity: signature.opacity,
-          rotation: signature.rotation
+          rotation: signature.rotation,
+          include_date: signature.include_date,
+          date_text: signature.date_text
         } : null,
         annotations,
         preview_page: previewPage
@@ -247,7 +249,9 @@ export const api = {
           width: signature.width,
           height: signature.height,
           opacity: signature.opacity,
-          rotation: signature.rotation
+          rotation: signature.rotation,
+          include_date: signature.include_date,
+          date_text: signature.date_text
         } : null,
         annotations,
         custom_filename: customFilename
